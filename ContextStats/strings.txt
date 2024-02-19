@@ -1,0 +1,333 @@
+PLUGIN_CONTEXTSTATS
+	EN	Context Stats
+
+PLUGIN_CONTEXTSTATS_DESC
+	EN	Display lists of tracks, albums or artists sorted by statistics from the context menus of artists, albums, genres, years and playlists. More information on the GitHub page.
+
+PLUGIN_CONTEXTSTATS_LOG_DESC
+	EN	Log of plugin Context Stats
+
+PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK_TEXT
+	EN	Click here for more information.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK
+	EN	https://github.com/AF-1/lms-contextstats
+
+PLUGIN_CONTEXTSTATS_HEADER
+	EN	sorted by statistics
+
+PLUGIN_CONTEXTSTATS_FOR
+	EN	for
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_TRACKS
+	EN	Tracks
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ALBUMS
+	EN	Albums
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ARTISTS
+	EN	Artists
+
+PLUGIN_CONTEXTSTATS_DECADE
+	EN	decade
+
+PLUGIN_CONTEXTSTATS_NOSEL
+	EN	None selected
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ALL
+	EN	All
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_NOITEMSFOUND
+	EN	No matching items
+
+PLUGIN_CONTEXTSTATS_FIRSTPLAYED
+	EN	First Played
+
+PLUGIN_CONTEXTSTATS_LASTADDED
+	EN	Last Added
+
+PLUGIN_CONTEXTSTATS_LASTPLAYED
+	EN	Last Played
+
+PLUGIN_CONTEXTSTATS_LEASTPLAYED
+	EN	Least Played
+
+PLUGIN_CONTEXTSTATS_LEASTPLAYEDLASTADDED
+	EN	Least Played Last Added
+
+PLUGIN_CONTEXTSTATS_LEASTPLAYEDNOTRECENTLYADDED
+	EN	Least Played Not Recently Added
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYED
+	EN	Most Played
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDLASTPLAYED
+	EN	Most Played Last Played
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDNOTRECENTLYPLAYED
+	EN	Most Played Not Recently Played
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDLASTADDED
+	EN	Most Played Last Added
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDNOTRECENTLYADDED
+	EN	Most Played Not Recently Added
+
+PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATED
+	EN	Not Completely Rated
+
+PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATEDLASTPLAYED
+	EN	Not Completely Rated Last Played
+
+PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATEDNOTRECENTLYPLAYED
+	EN	Not Completely Rated Not Recently Played
+
+PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATEDLASTADDED
+	EN	Not Completely Rated Last Added
+
+PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATEDNOTRECENTLYADDED
+	EN	Not Completely Rated Not Recently Added
+
+PLUGIN_CONTEXTSTATS_NEVERPLAYED
+	EN	Never Played
+
+PLUGIN_CONTEXTSTATS_NOTRATED
+	EN	Not Rated
+
+PLUGIN_CONTEXTSTATS_NOTRATEDLASTPLAYED
+	EN	Not Rated Last Played
+
+PLUGIN_CONTEXTSTATS_NOTRATEDNOTRECENTLYPLAYED
+	EN	Not Rated Not Recently Played
+
+PLUGIN_CONTEXTSTATS_NOTRATEDLASTADDED
+	EN	Not Rated Last Added
+
+PLUGIN_CONTEXTSTATS_NOTRATEDNOTRECENTLYADDED
+	EN	Not Rated Not Recently Added
+
+PLUGIN_CONTEXTSTATS_PARTLYPLAYED
+	EN	Partly Played
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_10
+	EN	Rated 0.5 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_20
+	EN	Rated 1 star
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_30
+	EN	Rated 1.5 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_40
+	EN	Rated 2 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_50
+	EN	Rated 2.5 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_60
+	EN	Rated 3 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_70
+	EN	Rated 3.5 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_80
+	EN	Rated 4 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_90
+	EN	Rated 4.5 stars
+
+PLUGIN_CONTEXTSTATS_SPECIFICRATING_100
+	EN	Rated 5 stars
+
+PLUGIN_CONTEXTSTATS_TOPRATED
+	EN	Top Rated
+
+PLUGIN_CONTEXTSTATS_TOPRATEDLASTPLAYED
+	EN	Top Rated Last Played
+
+PLUGIN_CONTEXTSTATS_TOPRATEDNOTRECENTLYPLAYED
+	EN	Top Rated Not Recently Played
+
+PLUGIN_CONTEXTSTATS_TOPRATEDLASTADDED
+	EN	Top Rated Last Added
+
+PLUGIN_CONTEXTSTATS_TOPRATEDNOTRECENTLYADDED
+	EN	Top Rated Not Recently Added
+
+PLUGIN_CONTEXTSTATS_TOPDPSV
+	EN	Top Dynamic Played/Skipped Value
+
+PLUGIN_CONTEXTSTATS_LEASTSKIPPED
+	EN	Least Skipped
+
+PLUGIN_CONTEXTSTATS_MOSTSKIPPED
+	EN	Most Skipped
+
+PLUGIN_CONTEXTSTATS_LASTSKIPPED
+	EN	Last Skipped
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_USEYEAR
+	EN	Use year
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_USEDECADE
+	EN	Use decade
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING
+	EN	Avg. Rating
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT
+	EN	Avg. Play Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT
+	EN	Avg. Skip Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV
+	EN	DPSV
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_RATING
+	EN	Rating
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT
+	EN	R
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT
+	EN	Play Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT
+	EN	PC
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT
+	EN	Skip Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT
+	EN	SC
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV
+	EN	DPSV
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ALLTRACKS
+	EN	All tracks
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ALLALBUMS
+	EN	All albums
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_ALLARTISTS
+	EN	All artists
+
+PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_PLAYNOW
+	EN	Play now
+
+PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_PLAYNEXT
+	EN	Play next
+
+PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_APPEND
+	EN	Append to queue
+
+
+PLUGIN_CONTEXTSTATS_SETTINGS_LISTLIMIT
+	EN	Max. number of returned list items
+
+PLUGIN_CONTEXTSTATS_SETTINGS_LISTLIMIT_DESC
+	EN	Set the max. number of displayed items for tracks/albums/artists sorted by statistics.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_USEAPCVALUES
+	EN	Use APC values for play count<br>and date last played
+
+PLUGIN_CONTEXTSTATS_SETTINGS_USEAPCVALUES_DESC
+	EN	If you have installed the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin, you can use APC values for play count and date last played.<br>Skip count, date last skipped and dynamic played/skipped values are collected and provided exclusively by APC anyway.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_HOMEBROWSEMENUITEM
+	EN	Display home menu item
+
+PLUGIN_CONTEXTSTATS_SETTINGS_HOMEBROWSEMENUITEM_DESC
+	EN	Displays a menu item in the Home menu that allows you to display lists of <i>all</i> tracks, albums or artists sorted by statistics - without filtering by genre, year etc. as in the context menu.<br><br>You need to <b>restart LMS</b> for changes to take effect.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_MINALBUMTRACKS
+	EN	Min. number of album tracks
+
+PLUGIN_CONTEXTSTATS_SETTINGS_MINALBUMTRACKS_DESC
+	EN	Applies only to <i>albums</i> sorted by statistics. Limits the result to albums that have at least this min. number of album tracks.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING
+	EN	Top min. rating
+
+PLUGIN_CONTEXTSTATS_SETTINGS_STARS
+	EN	stars
+
+PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING_DESC
+	EN	You can set the minimum rating used to sort items by <i>top min. rating</i>. Only tracks, albums and artists with this rating value and higher will be considered.<br><br>If you select 0, artists, albums and tracks will still be sorted by descending rating values.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_NOMIN
+	EN	No minimum
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD
+	EN	Recently played period
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD_DESC
+	EN	By default, sorting by <i>last played</i> will list all played items in descending order, only limited by the list limit.<br>With this setting you can limit the result to a specific period. This is a global setting and applies to all lists that sort by <i>last played</i> or <i>not recently played</i>.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYADDEDPERIOD
+	EN	Recently added period
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYADDEDPERIOD_DESC
+	EN	By default, sorting by <i>last added</i> will list all items in descending order, only limited by the list limit.<br>With this setting you can limit the result to a specific period. This is a global setting and applies to all lists that sort by <i>last added</i> or <i>not recently added</i>.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_NOLIMIT
+	EN	No limit
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_1WEEK
+	EN	1 week
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_2WEEKS
+	EN	2 weeks
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_4WEEKS
+	EN	4 weeks
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_3MONTHS
+	EN	3 months
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_6MONTHS
+	EN	6 months
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_12MONTHS
+	EN	12 months
+
+PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION
+	EN	Context menu position
+
+PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_DESC
+	EN	Lets you change the position of items in the context menus.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_TOP
+	EN	Top
+
+PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_BOTTOM
+	EN	Bottom
+
+PLUGIN_CONTEXTSTATS_SETTINGS_DISABLED
+	EN	Disabled
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SHOWYEAR
+	EN	Show year with albums and tracks
+
+PLUGIN_CONTEXTSTATS_SETTINGS_SHOWYEAR_DESC
+	EN	Show year with albums and tracks if there's enough screen space. Applies only to lists created with this plugin.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER
+	EN	Rating character
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_DESC
+	EN	Choose the displayed rating character for menus and titelformats.<br><br><b>*** IMPORTANT, please read ***</b><br><br>SB <b>Touch</b>, SB <b>Radio</b>, <b>piCorePlayer</b>, <b>Squeezeplay</b> and other players running jivelite <b>do not support displaying the unicode blackstar character out of the box</b>.<br>This character is not part of their <i>default</i> font. If you want to display this character on these devices you'll have to <b>replace the default font</b> on these devices with a font that contains this character.<br><br><a href="https://github.com/AF-1/" target="_blank" rel="noopener noreferrer">Click here for more information.</a>
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_STAR_TEXT
+	EN	* - common text star
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_STAR_2605
+	EN	★ - blackstar (unicode 2605)
+
+PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE
+	EN	Display additional line with selected statistical values (web view)
+
+PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE_DESC
+	EN	Displays another line with these statistical values for listed tracks, albums and artists:<br>rating, play count, skip count, dynamic played/skipped value.<br>(average values for albums and artists)<br>Applies to the <b>web UI</b> only.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.

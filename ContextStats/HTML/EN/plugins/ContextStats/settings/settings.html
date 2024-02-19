@@ -1,0 +1,119 @@
+<style>.githublink{padding-left:22px;}</style>
+[% page = "PLUGIN_CONTEXTSTATS" %]
+[% PROCESS settings/header.html %]
+<span[% IF systemSkin != "material" %] class="githublink"[% END %]><a href="[% "PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK" | string %]" target="_blank" rel="noopener noreferrer"><b>[% "PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK_TEXT" | string %]</b></a></span>
+<br><br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_LISTLIMIT" desc="PLUGIN_CONTEXTSTATS_SETTINGS_LISTLIMIT_DESC" %]
+	<input type="text" class="stdedit sliderInput_5_500_5" name="pref_listlimit" id="listlimit" value="[% prefs.listlimit %]" size="2">
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_USEAPCVALUES" desc="PLUGIN_CONTEXTSTATS_SETTINGS_USEAPCVALUES_DESC" %]
+	<select class="stdedit" name="pref_useapcvalues" id="useapcvalues">
+		<option [% IF NOT prefs.useapcvalues %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
+		<option [% IF prefs.useapcvalues %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_HOMEBROWSEMENUITEM" desc="PLUGIN_CONTEXTSTATS_SETTINGS_HOMEBROWSEMENUITEM_DESC" %]
+	<select class="stdedit" name="pref_browsemenuitem" id="browsemenuitem">
+		<option [% IF NOT prefs.browsemenuitem %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
+		<option [% IF prefs.browsemenuitem %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_MINALBUMTRACKS" desc="PLUGIN_CONTEXTSTATS_SETTINGS_MINALBUMTRACKS_DESC" %]
+	<input type="text" class="stdedit sliderInput_1_100_1" name="pref_min_album_tracks" id="min_album_tracks" value="[% prefs.min_album_tracks %]" size="2">
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING" desc="PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING_DESC" %]
+	<select name="pref_topratedminrating" id="topratedminrating">
+		<option [% IF NOT prefs.topratedminrating %]selected [% END %]value="0">[% "PLUGIN_CONTEXTSTATS_SETTINGS_NOMIN" | string %]</option>
+		[% FOREACH ratingvalue = [60,70,80,90,100] %]
+			<option [% IF prefs.topratedminrating == ratingvalue %]selected='selected' [% END %]value="[% ratingvalue %]">[% ratingvalue / 20 %] [% 'PLUGIN_CONTEXTSTATS_SETTINGS_STARS' | string %]</option>
+		[% END %]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_DESC" %]
+	<select name="pref_displayratingchar" id="displayratingchar">
+		[% FOREACH option = {
+			'0' => 'PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_STAR_TEXT',
+			'1' => 'PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_STAR_2605',
+		} %]
+			<option [% IF prefs.displayratingchar == option.key %]selected='selected' [% END %]value="[% option.key %]">[% option.value | string %]</option>
+		[%- END -%]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_SHOWYEAR" desc="PLUGIN_CONTEXTSTATS_SETTINGS_SHOWYEAR_DESC" %]
+	<select class="stdedit" name="pref_showyear" id="showyear">
+		<option [% IF NOT prefs.showyear %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
+		<option [% IF prefs.showyear %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE" desc="PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE_DESC" %]
+	<select class="stdedit" name="pref_displayxtraline" id="displayxtraline">
+		<option [% IF NOT prefs.displayxtraline %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
+		<option [% IF prefs.displayxtraline %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD_DESC" %]
+	<select name="pref_recentlyplayedperiod" id="recentlyplayedperiod">
+		[% myoptions = {
+			'0' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_NOLIMIT',
+			'604800' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_1WEEK',
+			'1209600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_2WEEKS',
+			'2419200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_4WEEKS',
+			'7257600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_3MONTHS',
+			'14515200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_6MONTHS',
+			'29030399' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_12MONTHS',
+		} %]
+		[% FOREACH option IN myoptions.keys.nsort %]
+			<option [% IF prefs.recentlyplayedperiod == option %]selected='selected' [% END %]value="[% option %]">[% myoptions.$option | string %]</option>
+		[%- END -%]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYADDEDPERIOD" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYADDEDPERIOD_DESC" %]
+	<select name="pref_recentlyaddedperiod" id="recentlyaddedperiod">
+		[% myoptions = {
+			'0' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_NOLIMIT',
+			'604800' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_1WEEK',
+			'1209600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_2WEEKS',
+			'2419200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_4WEEKS',
+			'7257600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_3MONTHS',
+			'14515200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_6MONTHS',
+			'29030399' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_12MONTHS',
+		} %]
+		[% FOREACH option IN myoptions.keys.nsort %]
+			<option [% IF prefs.recentlyplayedperiod == option %]selected='selected' [% END %]value="[% option %]">[% myoptions.$option | string %]</option>
+		[%- END -%]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION" desc="PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_DESC" %]
+	<select name="pref_contextmenuposition" id="contextmenuposition">
+		[% FOREACH option = {
+			'1' => 'PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_TOP',
+			'2' => 'PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_BOTTOM',
+		} %]
+			<option [% IF prefs.contextmenuposition == option.key %]selected='selected' [% END %]value="[% option.key %]">[% option.value | string %]</option>
+		[%- END -%]
+	</select>
+[% END %]
+<br>
+
+[% PROCESS settings/footer.html %]

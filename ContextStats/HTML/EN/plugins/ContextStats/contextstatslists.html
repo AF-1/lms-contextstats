@@ -1,0 +1,317 @@
+<style>
+@charset "UTF-8";
+.selectorMarker,.mouseOver{cursor:default !important;}
+.categoryheader{font-weight:600;font-size:120%;}
+.ucfirst{text-transform:capitalize;}
+.upper{text-transform:uppercase;}
+.cswrapper {
+	display: flex;
+	align-items : center;
+	justify-content : flex-start;
+}
+.firstline {
+	font-size: [% IF systemSkin != 'Classic' %]12[% ELSE %]11[% END %]px;
+}
+.secondline {
+	margin-top: 4px;
+	font-size: [% IF systemSkin != 'Classic' %]11[% ELSE %]10[% END %]px;
+}
+.thirdline {
+	margin-top: 4px;
+	font-size: [% IF systemSkin != 'Classic' %]10[% ELSE %]9[% END %]px;
+}
+.textwrapper {
+	padding-left: 20px;
+	vertical-align: center;
+}
+.underline-on-hover:hover {text-decoration: underline;}
+
+.container {
+	margin: 0 0 0 1rem;
+}
+[% IF systemSkin == "material" || systemSkin == "DarkDefault" || systemSkin == "TransparentDark" %]
+.info-circle {stroke: rgb(240, 240, 240);}
+[% ELSE %]
+.info-circle {stroke: rgb(0, 0, 0);}
+[% END %]
+.libinfo {
+	margin: 0;
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	padding-left: 16px;
+}
+.circular-loader {
+	visibility: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin-left:8px;
+}
+.circular-loader-rotate {
+	visibility: visible;
+	-webkit-animation: rotate 2s linear infinite;
+			animation: rotate 2s linear infinite;
+	-webkit-transform-origin: center center;
+		-ms-transform-origin: center center;
+	transform-origin: center center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin-left:8px;
+}
+.loader-path {
+	position: fixed;
+	stroke-dasharray: 150,200;
+	stroke-dashoffset: -10;
+	-webkit-animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+			animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+	stroke-linecap: round;
+}
+@-webkit-keyframes rotate {
+	100% {
+	-webkit-transform: rotate(360deg);
+			transform: rotate(360deg);
+	}
+}
+@keyframes rotate {
+	100% {
+	-webkit-transform: rotate(360deg);
+			transform: rotate(360deg);
+	}
+}
+@-webkit-keyframes dash {
+	0% {
+		stroke-dasharray: 1,200;
+		stroke-dashoffset: 0;
+	}
+	50% {
+		stroke-dasharray: 89,200;
+		stroke-dashoffset: -35;
+	}
+	100% {
+		stroke-dasharray: 89,200;
+		stroke-dashoffset: -95;
+	}
+}
+@keyframes dash {
+	0% {
+		stroke-dasharray: 1,200;
+		stroke-dashoffset: 0;
+	}
+	50% {
+		stroke-dasharray: 89,200;
+		stroke-dashoffset: -35;
+	}
+	100% {
+		stroke-dasharray: 89,200;
+		stroke-dashoffset: -95;
+	}
+}
+</style>
+[%- IF context == 'all'%]
+[%- pagetitle = 'PLUGIN_CONTEXTSTATS' | string -%]
+[% ELSE %]
+[%- pagetitle = objectname -%]
+[% END -%]
+
+[%- pwd_list = BLOCK -%]/
+	[%- IF context == 'all'%]
+	<a href="[% webroot %]plugins/ContextStats/html/browse_all.html?player=[% playerURI %]">[% 'PLUGIN_CONTEXTSTATS' | string %]</a>
+	[% ELSE %]
+	<a href="[% thishost %]/clixmlbrowser/clicmd=[% context %]info+items&[% IF context == 'year' %]year[% ELSE %][% context %]_id[% END %]=[% objectid %]&linktitle=Information%20([% objectname | uri %])/?player=[% playerURI %]">
+		Information ([% objectname | html %])
+	[% END -%]
+	</a> > [% IF listtype == 'artists' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ARTISTS' | string %][% ELSIF listtype == 'albums' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALBUMS' | string %][% ELSE %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_TRACKS' | string %][% END %] [% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]
+[% END -%]
+[% PROCESS pageheader.html %]
+<script type="text/javascript">
+		function refreshpage (selectedlistid) {
+			[%- IF context == 'year'%]
+			let usedecade = document.querySelector('#useDecade').value;
+			//console.log('useDecade = '+usedecade);
+			[%- END %]
+			let timestamp = Date.now();
+			let thisurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html/?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+[% IF context == 'year' %]"&usedecade="+usedecade+[% END %]"&player=[% playerURI %]&v="+timestamp;
+			//console.log('this url = '+thisurl);
+			document.getElementById("infocircle").classList.add("loader-path");
+			document.getElementById("circularloader").classList.add("circular-loader-rotate");
+			window.location.replace(thisurl);
+		}
+
+		[%- IF context == 'year'%]
+		function refreshYear (usedecade) {
+			let selectedlistid = document.querySelector('#statsselect').value;
+			//console.dir('selectedlistid = '+selectedlistid);
+			let yearurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html/?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+"&usedecade="+usedecade+"&player=[% playerURI %]";
+			//console.log('yearurl = '+yearurl);
+			document.getElementById("infocircle").classList.add("loader-path");
+			document.getElementById("circularloader").classList.add("circular-loader-rotate");
+			window.location.replace(yearurl);
+		}
+		[%- END %]
+</script>
+<br>
+<div class="container">
+	<span class="categoryheader"> <span class="upper">[% IF listtype == 'artists' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ARTISTS' | string %][% ELSIF listtype == 'albums' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALBUMS' | string %][% ELSE %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_TRACKS' | string %][% END %]</span> <span class="ucfirst">[% 'PLUGIN_CONTEXTSTATS_HEADER' | string %] - [% context | getstring %][% UNLESS context == 'all' %]:</span> [% FILTER truncate(80, '&hellip;') %][% objectname %][% END %][% END %]</span><br><br>
+	<div>
+		<select onChange="refreshpage(this.value);" id="statsselect">
+				<option value="" [% IF !selectedlistid %]selected='selected' [% END %]>[% 'PLUGIN_CONTEXTSTATS_NOSEL' | string %]</option>
+			[% FOREACH item IN listTypes.values.nsort('sortorder') %]
+				<option value="[% item.id %]" [% IF item.id == selectedlistid %]selected='selected' [% END %]>[% item.name %]</option>
+			[% END %]
+		</select>
+		[% IF context == 'year' %]&nbsp;&nbsp;[% 'PLUGIN_CONTEXTSTATS_FOR' | string %]&nbsp;&nbsp;
+		<select onChange="refreshYear(this.value);" id="useDecade">
+			<option value="0" [% IF !usedecade %]selected='selected' [% END %]>[% context | getstring %] ([% objectid %])</option>
+			<option value="1" [% IF usedecade %]selected='selected' [% END %]>[% 'PLUGIN_CONTEXTSTATS_DECADE' | string %] ([% decade %])</option>
+		</select>
+		[% END %]
+		<span class="libinfo">
+			<svg width="100%" height="100%" id="circularloader" class="circular-loader info-circle" viewBox="0 0 32 32" >
+				<circle id="infocircle" cx="16" cy="16" r="15" fill="none" stroke-width="2" />
+			</svg>
+		</span>
+	</div>
+</div>
+<br><br>
+[%- IF selectedlistid %]
+[%- IF statsitems %]
+	[%- WRAPPER contentcontainer %]
+		[% odd = 1 %]
+		[%- IF itemcount > 1 %]
+			[% BLOCK controls_allsongs %]
+				[% WRAPPER addlink noTarget=1 -%]
+					[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=add&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
+					[% ELSE %]
+						[% IF listtype == 'albums' or listtype == 'artists' %]
+						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=contextstats&p1=plcontrolcmd&p2=cmd:add&p3=listtype:[% listtype %]&p4=ids:[% allitemids %]&player=[% playerURI %]', 1);"
+						[% ELSE %]
+						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:add&p2=track_id:[% allitemids %]&player=[% playerURI %]', 1);"
+						[% END %]
+					[% END %]
+				[% END %]
+				[% IF systemSkin != 'Classic' %]
+					[% WRAPPER insertlink noTarget=1 -%]
+						[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+						href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=insert&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
+						[% ELSE %]
+							[% IF listtype == 'albums' or listtype == 'artists' %]
+							onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=contextstats&p1=plcontrolcmd&p2=cmd:insert&p3=listtype:[% listtype %]&p4=ids:[% allitemids %]&player=[% playerURI %]', 1);"
+							[% ELSE %]
+							onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:insert&p2=track_id:[% allitemids %]&player=[% playerURI %]', 1);"
+							[% END %]
+						[% END %]
+					[% END %]
+				[% END %]
+				[% WRAPPER playlink noTarget=1 -%]
+					[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=load&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
+					[% ELSE %]
+						[% IF listtype == 'albums' or listtype == 'artists' %]
+						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=contextstats&p1=plcontrolcmd&p2=cmd:load&p3=listtype:[% listtype %]&p4=ids:[% allitemids %]&player=[% playerURI %]', 1);"
+						[% ELSE %]
+						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:load&p2=track_id:[% allitemids %]&player=[% playerURI %]', 1);"
+						[% END %]
+					[% END %]
+				[% END %]
+			[% END %]
+			[%- WRAPPER contentitem controls='controls_allsongs' %]
+			<span class="cswrapper">
+				[% IF systemSkin != 'Classic' %]<span class="flexitem"><img src="[% webroot %]plugins/ContextStats/html/images/allsongs.png" width="35" height="35"></span>[% END %]
+				<span class="flexitem firstline textwrapper">
+					[% IF listtype == 'artists' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLARTISTS' | string %][% ELSIF listtype == 'albums' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLALBUMS' | string %][% ELSE %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLTRACKS' | string %][% END %] ([% itemcount %])
+				</span>
+			</span>
+			[% END %]
+			[% odd = (not odd) %]
+		[%- END %]
+
+		[%- FOREACH item IN statsitems %]
+			[% BLOCK controls %]
+				[% WRAPPER addlink noTarget=1 -%]
+					[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=add&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
+					[% ELSE %]
+					onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:add&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
+					[% END %]
+				[% END %]
+				[% IF systemSkin != 'Classic' %]
+					[% WRAPPER insertlink noTarget=1 -%]
+						[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+						href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=insert&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
+						[% ELSE %]
+						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:insert&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
+						[% END %]
+					[% END %]
+				[% END %]
+				[% WRAPPER playlink noTarget=1 -%]
+					[% IF systemSkin != 'Default' && systemSkin != 'DarkDefault' %]
+					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=load&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
+					[% ELSE %]
+					onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:load&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
+					[% END %]
+				[% END %]
+			[% END %]
+			[%- WRAPPER contentitem controls='controls' %]
+			<span class="cswrapper">
+				[% IF systemSkin != 'Classic' %]
+				<span class="flexitem">
+					[% IF listtype == 'artists' %]
+					<a class="underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.id %]&linktitle=BROWSE_BY_ALBUM&player=[% playerURI %]/">
+					<img [% IF item.artistimage %]src="[% webroot %][% item.artistimage %]/image_50x50_o" srcset="% webroot %][% item.artistimage %]/cover_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/artist.png"[% END %] width="35" height="35" onload="resize(this, 35)">
+					</a>
+					[% ELSE %]
+						[% IF listtype == 'albums' %]
+						<a class="underline-on-hover" href="[% webroot %][% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">
+						[% ELSE %]
+						<a class="underline-on-hover" href="[% webroot %]songinfo.html?item=[% item.id %]&amp;player=[% playerURI %]">
+						[% END %]
+						<img [% IF item.artworkid %]src="/music/[% item.artworkid %]/cover_350x35_o" srcset="/music/[% item.artworkid %]/cover_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/coverplaceholder.png"[% END %] width="35" height="35" onload="resize(this, 35)">
+						</a>
+					[% END %]
+				</span>
+				[% END %]
+				<span class="flexitem textwrapper">
+					[% IF listtype == 'albums' %]
+					<a class="firstline underline-on-hover" href="[% webroot %][% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
+					<br>
+					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.artistID %]&player=[% playerURI %]&linktitle=[% stringARTIST %]%20([% item.artistname | uri %])/">[% item.artistname %]</a>
+					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
+					[% IF displayxtraline %]
+					<br>
+					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
+					[% END %]
+					[% END %]
+					[% IF listtype == 'artists' %]
+					<a class="firstline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.id %]&linktitle=BROWSE_BY_ALBUM&player=[% playerURI %]/">[% item.artistname %]</a>
+					[% IF displayxtraline %]
+					<br>
+					<span class="secondline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
+					[% END %]
+					[% END %]
+					[% IF listtype == 'tracks' %]
+					<a class="firstline underline-on-hover" href="[% webroot %]songinfo.html?item=[% item.id %]&amp;player=[% playerURI %]">[% item.tracktitle %]</a>
+					<br>
+					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.artistID %]&player=[% playerURI %]&linktitle=[% stringARTIST %]%20([% item.artistname | uri %])/">[% item.artistname %]</a> &#x2022;
+					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
+					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
+					[% IF displayxtraline %]
+					<br>
+					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_RATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]
+					[% END %]
+					[% END %]
+				</span>
+			</span>
+			[% END %]
+		[% odd = (not odd) %]
+		[%- END %]
+	[%- END %]
+[%- ELSE %]
+<div class="container">
+	[% "PLUGIN_CONTEXTSTATS_LISTITEMS_NOITEMSFOUND" | string %]
+</div>
+[%- END %]
+[%- END %]
+[% PROCESS pagefooter.html %]

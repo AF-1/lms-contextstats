@@ -1,0 +1,26 @@
+<style>
+@charset "UTF-8";
+.selectorMarker,.mouseOver{cursor:default !important;}
+.ucfirst{text-transform:capitalize;}
+.upper{text-transform:uppercase;}
+.textwrapper {margin-top: 6px;}
+.underline-on-hover:hover {text-decoration: underline;}
+</style>
+[%- pagetitle = 'PLUGIN_CONTEXTSTATS' | string -%]
+[%- pwd_list = BLOCK -%]/
+	[% 'PLUGIN_CONTEXTSTATS' | string %] > 
+	<span class="ucfirst">[% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</span>
+[% END -%]
+[% PROCESS pageheader.html %]
+[% IF systemSkin != 'Classic' %]<br>[% END %]
+[%- WRAPPER contentcontainer %]
+	[% odd = 1 %]
+		[%- FOREACH item IN lists.keys.nsort %]
+		[%- WRAPPER contentitem %]
+			<a class="underline-on-hover" href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?context=all&amp;listtype=[% lists.$item.type %]&amp;player=[% playerURI %]" [% IF browserTarget %]target="[% browserTarget %]"[% END %]">[% lists.$item.name %] [% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</a>
+			[% IF systemSkin != 'Classic' %]<br><br>[% END %]
+		[% END %]
+		[% odd = (not odd) %]
+		[% END %]
+[%- END %]
+[% PROCESS pagefooter.html %]
