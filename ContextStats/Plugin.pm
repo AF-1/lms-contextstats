@@ -1106,21 +1106,21 @@ sub getListsForContext {
 	foreach my $thisItem (keys %{$listTypes}) {
 		if ($thisListType eq 'tracks') {
 			if ($thisContext eq 'all') {
-				next if scalar keys $listTypes->{$thisItem}{'tracksvalidcontext'} == 0;
+				next if scalar keys %{$listTypes->{$thisItem}{'tracksvalidcontext'}} == 0;
 			} else {
 				next if !$listTypes->{$thisItem}{'tracksvalidcontext'}{$thisContext};
 			}
 		}
 		if ($thisListType eq 'albums') {
 			if ($thisContext eq 'all') {
-				next if scalar keys $listTypes->{$thisItem}{'albumsvalidcontext'} == 0;
+				next if scalar keys %{$listTypes->{$thisItem}{'albumsvalidcontext'}} == 0;
 			} else {
 				next if !$listTypes->{$thisItem}{'albumsvalidcontext'}{$thisContext};
 			}
 		}
 		if ($thisListType eq 'artists') {
 			if ($thisContext eq 'all') {
-				next if scalar keys $listTypes->{$thisItem}{'artistsvalidcontext'} == 0;
+				next if scalar keys %{$listTypes->{$thisItem}{'artistsvalidcontext'}} == 0;
 			} else {
 				next if !$listTypes->{$thisItem}{'artistsvalidcontext'}{$thisContext};
 			}
