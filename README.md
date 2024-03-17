@@ -32,4 +32,5 @@ Please read the instructions on how to [install a plugin manually](https://githu
 
 If you want to report a new issue, please fill out this [**issue report template**](https://github.com/AF-1/lms-contextstats/issues/new?template=bug_report.md&title=%5BISSUE%5D+).
 <br><br><br><br>
-[^1]:inspired by Erland's TrackStat
+[^1]:If you want localized strings in your language, please read <a href="https://github.com/AF-1/sobras/wiki/Adding-localization-to-LMS-plugins"><b>this</b></a>.
+inspired by Erland's TrackStat.
