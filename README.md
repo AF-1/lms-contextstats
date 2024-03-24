@@ -13,6 +13,12 @@ Context Stats
 <br><br><br>
 
 
+## Screenshots
+
+<img src="screenshots/cs.gif" width="100%">
+<br><br><br>
+
+
 ## Installation
 
 ### Using the repository URL
