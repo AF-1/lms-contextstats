@@ -1404,7 +1404,7 @@ sub getItemsForStats {
 				my $trackYear = $prefs->get('showyear') ? $trackYear : 0;
 				my $ratingtext = ($trackRating > 4) ? getAppendedRatingText($trackRating, 'appended') : '';
 				$trackTitle = trimStringLength(Slim::Utils::Unicode::utf8decode($trackTitle, 'utf8'), ($jive ? 60 : 70)).$ratingtext;
-				$log->info(Slim::Utils::Unicode::encodingFromString($trackTitle)."\n".$trackTitle."\n\n");
+				main::DEBUGLOG && $log->is_debug && $log->debug(Slim::Utils::Unicode::encodingFromString($trackTitle).": ".$trackTitle);
 				push (@matchingItems, {
 					id => $trackID,
 					tracktitle => $trackTitle,
