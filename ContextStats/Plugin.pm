@@ -65,7 +65,8 @@ sub initPlugin {
 	}
 
 	registerContextMenuItems();
-																											#    Q  T
+
+#	Slim::Control::Request::addDispatch  C  Q  T
 	Slim::Control::Request::addDispatch(['contextstats', 'plcontrolcmd', '_cmd', '_listtype', '_ids'], [1, 0, 1, \&_multipleIdsPLcontrol]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jiveyearmenu', '_context', '_listtype', '_objectid', '_objectname'], [1, 0, 1, \&_jiveYearOrDecadeSel]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jivestatslistsmenu', '_context', '_listtype', '_objectid', '_objectname', '_usedecade'], [1, 0, 1, \&_jiveStatsListsMenu]);
