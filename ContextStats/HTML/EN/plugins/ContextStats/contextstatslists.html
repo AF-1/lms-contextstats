@@ -264,7 +264,7 @@
 					</a>
 					[% ELSE %]
 						[% IF listtype == 'albums' %]
-						<a class="underline-on-hover" href="[% webroot %][% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">
+						<a class="underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.id %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">
 						[% ELSE %]
 						<a class="underline-on-hover" href="[% webroot %]songinfo.html?item=[% item.id %]&amp;player=[% playerURI %]">
 						[% END %]
@@ -275,7 +275,7 @@
 				[% END %]
 				<span class="flexitem textwrapper">
 					[% IF listtype == 'albums' %]
-					<a class="firstline underline-on-hover" href="[% webroot %][% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
+					<a class="firstline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.id %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
 					<br>
 					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.artistID %]&player=[% playerURI %]&linktitle=[% stringARTIST %]%20([% item.artistname | uri %])/">[% item.artistname %]</a>
 					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
