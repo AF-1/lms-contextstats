@@ -8,7 +8,7 @@
 </style>
 [%- pagetitle = 'PLUGIN_CONTEXTSTATS' | string -%]
 [%- pwd_list = BLOCK -%]/
-	[% 'PLUGIN_CONTEXTSTATS' | string %] > 
+	[% 'PLUGIN_CONTEXTSTATS' | string %] [% IF systemSkin == 'Classic' %]/[% ELSE %]>[% END %] 
 	<span class="ucfirst">[% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</span>
 [% END -%]
 [% PROCESS pageheader.html %]
