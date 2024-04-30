@@ -26,7 +26,7 @@ Context Stats
 - Add the repository URL below at the bottom of *LMS* > *Settings* > *Plugins* and click *Apply*:<br>
 [https://raw.githubusercontent.com/AF-1/sobras/main/repos/lmsghonly/public.xml](https://raw.githubusercontent.com/AF-1/sobras/main/repos/lmsghonly/public.xml)
 
-- Install the new version.
+- Install the plugin from the added repository at the bottom of the page.
 <br>
 
 ### Manual Install
