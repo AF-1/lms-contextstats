@@ -2,7 +2,7 @@ PLUGIN_CONTEXTSTATS
 	EN	Context Stats
 
 PLUGIN_CONTEXTSTATS_DESC
-	EN	Display lists of tracks, albums or artists sorted by statistics from the context menus of artists, albums, genres, years and playlists. More information on the GitHub page.
+	EN	Display lists of tracks, albums or artists sorted by statistics from the context menus of artists, albums, genres, years and playlists.
 
 PLUGIN_CONTEXTSTATS_LOG_DESC
 	EN	Log of plugin Context Stats
