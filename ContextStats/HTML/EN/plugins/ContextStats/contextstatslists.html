@@ -29,7 +29,7 @@
 .container {
 	margin: 0 0 0 1rem;
 }
-[% IF systemSkin == "material" || systemSkin == "DarkDefault" %]
+[% IF systemSkin == "material" || systemSkin == "DarkDefault" || systemSkin == "DarkLogic" %]
 .info-circle {stroke: rgb(240, 240, 240);}
 [% ELSE %]
 .info-circle {stroke: rgb(0, 0, 0);}
@@ -182,7 +182,7 @@
 		[%- IF itemcount > 1 %]
 			[% BLOCK controls_allsongs %]
 				[% WRAPPER addlink noTarget=1 -%]
-					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=add&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
 					[% ELSE %]
 						[% IF listtype == 'albums' or listtype == 'artists' %]
@@ -194,7 +194,7 @@
 				[% END %]
 				[% IF systemSkin != 'Classic' %]
 					[% WRAPPER insertlink noTarget=1 -%]
-						[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+						[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 						href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=insert&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
 						[% ELSE %]
 							[% IF listtype == 'albums' or listtype == 'artists' %]
@@ -206,7 +206,7 @@
 					[% END %]
 				[% END %]
 				[% WRAPPER playlink noTarget=1 -%]
-					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=load&amp;actiontrackids=[% allitemids %]&amp;player=[% playerURI %]"
 					[% ELSE %]
 						[% IF listtype == 'albums' or listtype == 'artists' %]
@@ -231,7 +231,7 @@
 		[%- FOREACH item IN statsitems %]
 			[% BLOCK controls %]
 				[% WRAPPER addlink noTarget=1 -%]
-					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=add&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
 					[% ELSE %]
 					onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:add&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
@@ -239,7 +239,7 @@
 				[% END %]
 				[% IF systemSkin != 'Classic' %]
 					[% WRAPPER insertlink noTarget=1 -%]
-						[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+						[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 						href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=insert&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
 						[% ELSE %]
 						onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:insert&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
@@ -247,7 +247,7 @@
 					[% END %]
 				[% END %]
 				[% WRAPPER playlink noTarget=1 -%]
-					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' %]
+					[% IF systemSkin != 'Default' && systemSkin != 'Logic' && systemSkin != 'DarkDefault' && systemSkin != 'DarkLogic' %]
 					href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?selectedlistid=[% selectedlistid %]&amp;context=[% context %]&amp;listtype=[% listtype %]&amp;objectid=[% objectid %][%IF objectname %]&amp;objectname=[% objectname %][% END %]&amp;action=load&amp;actiontrackids=[% item.id %]&amp;player=[% playerURI %]"
 					[% ELSE %]
 					onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:load&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
