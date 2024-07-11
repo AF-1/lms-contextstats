@@ -1027,6 +1027,59 @@ sub _jiveActionsMenu {
 		$request->addResultLoop('item_loop', $cnt, 'style', 'itemplay');
 		$cnt++;
 	}
+
+	unless ($multiple) {
+		my $id_prefix = substr($listType, 0, -1);
+		my $cmd = $id_prefix.'info';
+
+		if ($listType eq 'albums' || $listType eq 'artists') {
+			my $params = {
+				'menu' => 1,
+				$id_prefix.'_id' => $ids,
+				'useContextMenu' => 1,
+			};
+			$params->{'mode'} = $listType eq 'albums' ? 'tracks' : 'albums';
+			my $returntext = $listType eq 'albums' ? string('PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_BROWSEALBUM') : string('PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_BROWSEARTIST');
+			my $actions = {
+				'player' => 0,
+				'go' => {
+					'cmd' => ['browselibrary', 'items'],
+					'params' => $params,
+				},
+				'player' => 0,
+				'play' => {
+					'cmd' => [$cmd, 'items'],
+					'params' => $params,
+				}
+			};
+			$request->addResultLoop('item_loop', $cnt, 'actions', $actions);
+			$request->addResultLoop('item_loop', $cnt, 'text', $returntext);
+			$cnt++;
+		}
+
+		my $thisitem->{'actionParam'} = $id_prefix.'_id';
+		my $actions = {
+			'player' => 0,
+			'go' => {
+				'cmd' => [$cmd, 'items'],
+				'params' => {
+					'menu' => 1,
+					$thisitem->{'actionParam'} => $ids,
+				},
+			},
+			'player' => 0,
+			'play' => {
+				'cmd' => [$cmd, 'items'],
+				'params' => {
+					'menu' => 1,
+					$thisitem->{'actionParam'} => $ids,
+				},
+			}
+		};
+		$request->addResultLoop('item_loop', $cnt, 'actions', $actions);
+		$request->addResultLoop('item_loop', $cnt, 'text', string('PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_MORE'));
+		$cnt++;
+	}
 	$request->addResult('offset',0);
 	$request->addResult('count',$cnt);
 	$request->setStatusDone();
