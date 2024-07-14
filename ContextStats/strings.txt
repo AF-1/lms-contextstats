@@ -52,26 +52,50 @@ PLUGIN_CONTEXTSTATS_LASTPLAYED
 PLUGIN_CONTEXTSTATS_LEASTPLAYED
 	EN	Least Played
 
+PLUGIN_CONTEXTSTATS_LEASTPLAYEDAVERAGE
+	EN	Least Played (average pc)
+
 PLUGIN_CONTEXTSTATS_LEASTPLAYEDLASTADDED
 	EN	Least Played Last Added
+
+PLUGIN_CONTEXTSTATS_LEASTPLAYEDAVERAGE_LASTADDED
+	EN	Least Played Last Added (average pc)
 
 PLUGIN_CONTEXTSTATS_LEASTPLAYEDNOTRECENTLYADDED
 	EN	Least Played Not Recently Added
 
+PLUGIN_CONTEXTSTATS_LEASTPLAYEDAVERAGE_NOTRECENTLYADDED
+	EN	Least Played Not Recently Added (average pc)
+
 PLUGIN_CONTEXTSTATS_MOSTPLAYED
 	EN	Most Played
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDAVERAGE
+	EN	Most Played (average pc)
 
 PLUGIN_CONTEXTSTATS_MOSTPLAYEDLASTPLAYED
 	EN	Most Played Last Played
 
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDAVERAGE_LASTPLAYED
+	EN	Most Played Last Played (average pc)
+
 PLUGIN_CONTEXTSTATS_MOSTPLAYEDNOTRECENTLYPLAYED
 	EN	Most Played Not Recently Played
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDAVERAGE_NOTRECENTLYPLAYED
+	EN	Most Played Not Recently Played (average pc)
 
 PLUGIN_CONTEXTSTATS_MOSTPLAYEDLASTADDED
 	EN	Most Played Last Added
 
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDAVERAGE_LASTADDED
+	EN	Most Played Last Added (average pc)
+
 PLUGIN_CONTEXTSTATS_MOSTPLAYEDNOTRECENTLYADDED
 	EN	Most Played Not Recently Added
+
+PLUGIN_CONTEXTSTATS_MOSTPLAYEDAVERAGE_NOTRECENTLYADDED
+	EN	Most Played Not Recently Added (average pc)
 
 PLUGIN_CONTEXTSTATS_NOTCOMPLETELYRATED
 	EN	Not Completely Rated
@@ -160,8 +184,14 @@ PLUGIN_CONTEXTSTATS_TOPDPSV
 PLUGIN_CONTEXTSTATS_LEASTSKIPPED
 	EN	Least Skipped
 
+PLUGIN_CONTEXTSTATS_LEASTSKIPPEDAVERAGE
+	EN	Least Skipped (average sc)
+
 PLUGIN_CONTEXTSTATS_MOSTSKIPPED
 	EN	Most Skipped
+
+PLUGIN_CONTEXTSTATS_MOSTSKIPPEDAVERAGE
+	EN	Most Skipped (average sc)
 
 PLUGIN_CONTEXTSTATS_LASTSKIPPED
 	EN	Last Skipped
@@ -172,14 +202,17 @@ PLUGIN_CONTEXTSTATS_LISTITEMS_USEYEAR
 PLUGIN_CONTEXTSTATS_LISTITEMS_USEDECADE
 	EN	Use decade
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING
-	EN	Avg. Rating
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT
 	EN	Avg. Play Count
 
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT
+	EN	AvPC
+
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT
 	EN	Avg. Skip Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT
+	EN	AvSC
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV
 	EN	DPSV
@@ -190,17 +223,35 @@ PLUGIN_CONTEXTSTATS_LISTITEMS_RATING
 PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT
 	EN	R
 
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING
+	EN	Avg. Rating
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT
+	EN	AvR
+
 PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT
 	EN	Play Count
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT
 	EN	PC
 
+PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT
+	EN	Total Play Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT
+	EN	TPC
+
 PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT
 	EN	Skip Count
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT
 	EN	SC
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT
+	EN	Total Skip Count
+
+PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT
+	EN	TSC
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV
 	EN	DPSV
@@ -339,4 +390,10 @@ PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE
 	EN	Display additional line with selected statistical values (web view)
 
 PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE_DESC
-	EN	Displays another line with these statistical values for listed tracks, albums and artists:<br>rating, play count, skip count, dynamic played/skipped value.<br>(average values for albums and artists)<br>Applies to the <b>web UI</b> only.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
+	EN	Displays another line with these statistical values for listed tracks, albums and artists:<br>rating, play count, skip count, dynamic played/skipped value.<br>(average values only for albums and artists)<br>Applies to the <b>web UI</b> only.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/#-alternative-play-count" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH
+	EN	Max. line length of additional<br>statistical values for <i>albums</i><br>and <i>tracks</i> (jivelite, Material)
+
+PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH_DESC
+	EN	Set the maximum character length of the line that displays rating, play count, skip count, dynamic played/skipped values for album and track lists.<br>Applies only to <b>jivelite</b> players and Material.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/#-alternative-play-count" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.

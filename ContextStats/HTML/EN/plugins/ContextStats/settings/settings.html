@@ -68,6 +68,11 @@
 [% END %]
 <br>
 
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH" desc="PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH_DESC" %]
+	<input type="text" class="stdedit sliderInput_65_150_1" name="pref_jiveextralinelength" id="jiveextralinelength" value="[% prefs.jiveextralinelength %]" size="2">
+[% END %]
+<br>
+
 [% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD_DESC" %]
 	<select name="pref_recentlyplayedperiod" id="recentlyplayedperiod">
 		[% myoptions = {
