@@ -44,12 +44,12 @@ If you use this plugin and like it, perhaps you could give it a :star: so that o
 ## FAQ
 
 <details><summary>»<b>What do <i>AvR, TR, AvPC, TPC, AvSC, TSC and DPSV</i> stand for?</b>«</summary><br><p>
-- AvR = average rating<br><br>
-- TR = total rating<br><br>
-- AvPC = average play count<br><br>
-- TPC = total play count<br><br>
-- AvSC = average skip count<br><br>
-- TSC = total skip count<br><br>
+- AvR = average rating<br>
+- TR = total rating<br>
+- AvPC = average play count<br>
+- TPC = total play count<br>
+- AvSC = average skip count<br>
+- TSC = total skip count<br>
 - DPSV = the average dynamic played/skipped value.
 </p></details><br>
 
