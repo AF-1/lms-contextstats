@@ -44,8 +44,6 @@ If you use this plugin and like it, perhaps you could give it a :star: so that o
 ## FAQ
 
 <details><summary>»<b>What do <i>AvR, TR, AvPC, TPC, AvSC, TSC and DPSV</i> stand for?</b>«</summary><br><p>
-Av = average, i.e. the sum of all individual track values divided by the total number of all album/artist tracks.<br>
-T = total, i.e the sum of all individual track values for an album/artist.<br><br>
 - AvR = average rating<br><br>
 - TR = total rating<br><br>
 - AvPC = average play count<br><br>
@@ -57,7 +55,7 @@ T = total, i.e the sum of all individual track values for an album/artist.<br><b
 
 <details><summary>»<b>In lists for most/least total played or top total rated albums/artists, albums are sometimes listed more than once. Why?</b>«</summary><br><p>
 This happens if the LMS database contains <i>more than one</i> contributor for the <i>same</i> contributor <i>role</i> (artist, album artist, track artist, band).<br>
-Artists and albums lists in <i>Context Stats</i> will have items for each contributor (with identical (total) rating and play count values).</p></details><br>
+Artists and albums lists in <i>Context Stats</i> will have items for each contributor (with identical total rating, play count and skip count values).</p></details><br>
 
 <br><br>
 
