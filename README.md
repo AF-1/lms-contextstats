@@ -50,10 +50,10 @@ If you use this plugin and like it, perhaps you could give it a :star: so that o
 - TPC = total play count<br>
 - AvSC = average skip count<br>
 - TSC = total skip count<br>
-- DPSV = the average dynamic played/skipped value.
+- DPSV = average dynamic played/skipped value.
 </p></details><br>
 
-<details><summary>»<b>In lists for most/least total played or top total rated albums/artists, albums are sometimes listed more than once. Why?</b>«</summary><br><p>
+<details><summary>»<b>In the lists of most/least total played or top total rated albums/artists, albums are sometimes listed more than once. Why?</b>«</summary><br><p>
 This happens if the LMS database contains <i>more than one</i> contributor for the <i>same</i> contributor <i>role</i> (artist, album artist, track artist, band).<br>
 Artists and albums lists in <i>Context Stats</i> will have items for each contributor (with identical total rating, play count and skip count values).</p></details><br>
 
