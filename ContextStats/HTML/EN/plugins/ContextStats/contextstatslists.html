@@ -281,14 +281,14 @@
 					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
 					[% IF displayxtraline %]
 					<br>
-					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT" | string %]: [% item.totalplaycount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT" | string %]: [% item.avgplaycount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT" | string %]: [% item.totalskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT" | string %]: [% item.avgskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
+					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT" | string %]: [% item.avgrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT" | string %]: [% item.totalrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT" | string %]: [% item.avgplaycount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT" | string %]: [% item.totalplaycount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT" | string %]: [% item.avgskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT" | string %]: [% item.totalskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
 					[% END %]
 					[% END %]
 					[% IF listtype == 'artists' %]
 					<a class="firstline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.id %]&linktitle=BROWSE_BY_ALBUM&player=[% playerURI %]/">[% item.artistname %]</a>
 					[% IF displayxtraline %]
 					<br>
-					<span class="secondline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT" | string %]: [% item.totalplaycount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT" | string %]: [% item.avgplaycount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT" | string %]: [% item.totalskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT" | string %]: [% item.avgskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
+					<span class="secondline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT" | string %]: [% item.avgrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT" | string %]: [% item.totalrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT" | string %]: [% item.avgplaycount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT" | string %]: [% item.totalplaycount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT" | string %]: [% item.avgskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT" | string %]: [% item.totalskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
 					[% END %]
 					[% END %]
 					[% IF listtype == 'tracks' %]
@@ -299,7 +299,7 @@
 					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
 					[% IF displayxtraline %]
 					<br>
-					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_RATING" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]
+					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]
 					[% END %]
 					[% END %]
 				</span>

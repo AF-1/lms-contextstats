@@ -1,6 +1,7 @@
 <style>.githublink{padding-left:22px;}</style>
 [% page = "PLUGIN_CONTEXTSTATS" %]
 [% PROCESS settings/header.html %]
+<br>
 <span[% IF systemSkin != "material" %] class="githublink"[% END %]><a href="[% "PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK" | string %]" target="_blank" rel="noopener noreferrer"><b>[% "PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK_TEXT" | string %]</b></a></span>
 <br><br>
 
@@ -36,6 +37,14 @@
 		[% FOREACH ratingvalue = [60,70,80,90,100] %]
 			<option [% IF prefs.topratedminrating == ratingvalue %]selected='selected' [% END %]value="[% ratingvalue %]">[% ratingvalue / 20 %] [% 'PLUGIN_CONTEXTSTATS_SETTINGS_STARS' | string %]</option>
 		[% END %]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE" desc="PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE_DESC" %]
+	<select class="stdedit" name="pref_usefivestarscale" id="usefivestarscale">
+		<option [% IF NOT prefs.usefivestarscale %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
+		<option [% IF prefs.usefivestarscale %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
 	</select>
 [% END %]
 <br>
