@@ -133,6 +133,36 @@ PLUGIN_CONTEXTSTATS_NOTRATEDNOTRECENTLYADDED
 PLUGIN_CONTEXTSTATS_PARTLYPLAYED
 	EN	Partly Played
 
+PLUGIN_CONTEXTSTATS_RATED_TOTAL
+	EN	Rated
+
+PLUGIN_CONTEXTSTATS_RATED_AVG
+	EN	Rated (average rating)
+
+PLUGIN_CONTEXTSTATS_RATEDLASTPLAYED_TOTAL
+	EN	Rated Last Played
+
+PLUGIN_CONTEXTSTATS_RATEDLASTPLAYED_AVG
+	EN	Rated Last Played (average rating)
+
+PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYPLAYED_TOTAL
+	EN	Rated Not Recently Played
+
+PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYPLAYED_AVG
+	EN	Rated Not Recently Played (average rating)
+
+PLUGIN_CONTEXTSTATS_RATEDLASTADDED_TOTAL
+	EN	Rated Last Added
+
+PLUGIN_CONTEXTSTATS_RATEDLASTADDED_AVG
+	EN	Rated Last Added (average rating)
+
+PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYADDED_TOTAL
+	EN	Rated Not Recently Added
+
+PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYADDED_AVG
+	EN	Rated Not Recently Added (average rating)
+
 PLUGIN_CONTEXTSTATS_SPECIFICRATING_10
 	EN	Rated 0.5 stars
 
@@ -336,10 +366,7 @@ PLUGIN_CONTEXTSTATS_SETTINGS_STARS
 	EN	stars
 
 PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING_DESC
-	EN	You can set the minimum rating used to sort items by <i>top min. rating</i>. Only tracks, albums and artists with this rating value and higher will be considered.<br><br>If you select 0, artists, albums and tracks will still be sorted by descending rating values.
-
-PLUGIN_CONTEXTSTATS_SETTINGS_NOMIN
-	EN	No minimum
+	EN	You can set the minimum rating used to sort items by <i>top min. rating</i>. Only tracks, albums and artists with this rating value and higher will be considered.
 
 PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE
 	EN	Use five star rating scale

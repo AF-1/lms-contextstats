@@ -97,7 +97,10 @@ sub initPrefs {
 		displayxtraline => 1,
 		jiveextralinelength => 82,
 		usefivestarscale => 1,
+		topratedminrating => 60,
 	});
+	$prefs->set('topratedminrating', 60) if !$prefs->get('topratedminrating');
+
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 1, 'high' => 100}, 'min_album_tracks');
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 5, 'high' => 500}, 'listlimit');
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 65, 'high' => 150}, 'jiveextralinelength');
@@ -373,6 +376,106 @@ sub initPrefs {
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
 			sortorder => 53
 		},
+		'RatedTotal' => {
+			id => 'RatedTotal',
+			name => string('PLUGIN_CONTEXTSTATS_RATED_TOTAL'),
+			apc => 0,
+			reqstats => {'rating' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 60
+		},
+		'RatedAverage' => {
+			id => 'RatedAverage',
+			name => string('PLUGIN_CONTEXTSTATS_RATED_AVG'),
+			apc => 0,
+			reqstats => {'rating' => 1},
+			tracksvalidcontext => {},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 61
+		},
+		'RatedTotalLastPlayed' => {
+			id => 'RatedTotalLastPlayed',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDLASTPLAYED_TOTAL'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'lastPlayed' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 62
+		},
+		'RatedAverageLastPlayed' => {
+			id => 'RatedAverageLastPlayed',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDLASTPLAYED_AVG'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'lastPlayed' => 1},
+			tracksvalidcontext => {},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 63
+		},
+		'RatedTotalNotRecentlyPlayed' => {
+			id => 'RatedTotalNotRecentlyPlayed',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYPLAYED_TOTAL'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'lastPlayed' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 64
+		},
+		'RatedAverageNotRecentlyPlayed' => {
+			id => 'RatedAverageNotRecentlyPlayed',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYPLAYED_AVG'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'lastPlayed' => 1},
+			tracksvalidcontext => {},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 65
+		},
+		'RatedTotalLastAdded' => {
+			id => 'RatedTotalLastAdded',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDLASTADDED_TOTAL'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'added' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 66
+		},
+		'RatedAverageLastAdded' => {
+			id => 'RatedAverageLastAdded',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDLASTADDED_AVG'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'added' => 1},
+			tracksvalidcontext => {},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 67
+		},
+		'RatedTotalNotRecentlyAdded' => {
+			id => 'RatedTotalNotRecentlyAdded',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYADDED_TOTAL'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'added' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 68
+		},
+		'RatedAverageNotRecentlyAdded' => {
+			id => 'RatedAverageNotRecentlyAdded',
+			name => string('PLUGIN_CONTEXTSTATS_RATEDNOTRECENTLYADDED_AVG'),
+			apc => 0,
+			reqstats => {'rating' => 1, 'added' => 1},
+			tracksvalidcontext => {},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 69
+		},
 		'SpecificRating10' => {
 			id => 'SpecificRating10',
 			name => string('PLUGIN_CONTEXTSTATS_SPECIFICRATING_10'),
@@ -381,7 +484,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 60
+			sortorder => 80
 		},
 		'SpecificRating20' => {
 			id => 'SpecificRating20',
@@ -391,7 +494,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 61
+			sortorder => 81
 		},
 		'SpecificRating30' => {
 			id => 'SpecificRating30',
@@ -401,7 +504,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 62
+			sortorder => 82
 		},
 		'SpecificRating40' => {
 			id => 'SpecificRating40',
@@ -411,7 +514,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 63
+			sortorder => 83
 		},
 		'SpecificRating50' => {
 			id => 'SpecificRating50',
@@ -421,7 +524,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 64
+			sortorder => 84
 		},
 		'SpecificRating60' => {
 			id => 'SpecificRating60',
@@ -431,7 +534,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 65
+			sortorder => 85
 		},
 		'SpecificRating70' => {
 			id => 'SpecificRating70',
@@ -441,7 +544,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 66
+			sortorder => 86
 		},
 		'SpecificRating80' => {
 			id => 'SpecificRating80',
@@ -451,7 +554,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 67
+			sortorder => 87
 		},
 		'SpecificRating90' => {
 			id => 'SpecificRating90',
@@ -461,7 +564,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 68
+			sortorder => 88
 		},
 		'SpecificRating100' => {
 			id => 'SpecificRating100',
@@ -471,8 +574,11 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 69
+			sortorder => 89
 		},
+
+
+
 		'TopRatedTotal' => {
 			id => 'TopRatedTotal',
 			name => string('PLUGIN_CONTEXTSTATS_TOPRATED_TOTAL'),
@@ -481,7 +587,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 80
+			sortorder => 90
 		},
 		'TopRatedAverage' => {
 			id => 'TopRatedAverage',
@@ -491,7 +597,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 81
+			sortorder => 91
 		},
 		'TopDPSV' => {
 			id => 'TopDPSV',
@@ -501,7 +607,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 82
+			sortorder => 92
 		},
 		'TopRatedTotalLastPlayed' => {
 			id => 'TopRatedTotalLastPlayed',
@@ -511,7 +617,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 83
+			sortorder => 93
 		},
 		'TopRatedAverageLastPlayed' => {
 			id => 'TopRatedAverageLastPlayed',
@@ -521,7 +627,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 84
+			sortorder => 94
 		},
 		'TopRatedTotalNotRecentlyPlayed' => {
 			id => 'TopRatedTotalNotRecentlyPlayed',
@@ -531,7 +637,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 85
+			sortorder => 95
 		},
 		'TopRatedAverageNotRecentlyPlayed' => {
 			id => 'TopRatedAverageNotRecentlyPlayed',
@@ -541,7 +647,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 86
+			sortorder => 96
 		},
 		'TopRatedTotalLastAdded' => {
 			id => 'TopRatedTotalLastAdded',
@@ -551,7 +657,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 87
+			sortorder => 97
 		},
 		'TopRatedAverageLastAdded' => {
 			id => 'TopRatedAverageLastAdded',
@@ -561,7 +667,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 88
+			sortorder => 98
 		},
 		'TopRatedTotalNotRecentlyAdded' => {
 			id => 'TopRatedTotalNotRecentlyAdded',
@@ -571,7 +677,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 89
+			sortorder => 99
 		},
 		'TopRatedAverageNotRecentlyAdded' => {
 			id => 'TopRatedAverageNotRecentlyAdded',
@@ -581,7 +687,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 90
+			sortorder => 100
 		},
 		'NotCompletelyRated' => {
 			id => 'NotCompletelyRated',
@@ -591,7 +697,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 100
+			sortorder => 110
 		},
 		'NotCompletelyRatedLastPlayed' => {
 			id => 'NotCompletelyRatedLastPlayed',
@@ -601,7 +707,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 101
+			sortorder => 111
 		},
 		'NotCompletelyRatedNotRecentlyPlayed' => {
 			id => 'NotCompletelyRatedNotRecentlyPlayed',
@@ -611,7 +717,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 102
+			sortorder => 112
 		},
 		'NotCompletelyRatedLastAdded' => {
 			id => 'NotCompletelyRatedLastAdded',
@@ -621,7 +727,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 103
+			sortorder => 113
 		},
 		'NotCompletelyRatedNotRecentlyAdded' => {
 			id => 'NotCompletelyRatedNotRecentlyAdded',
@@ -631,7 +737,7 @@ sub initPrefs {
 			tracksvalidcontext => {},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 104
+			sortorder => 114
 		},
 		'NotRated' => {
 			id => 'NotRated',
@@ -641,7 +747,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 105
+			sortorder => 115
 		},
 		'NotRatedLastPlayed' => {
 			id => 'NotRatedLastPlayed',
@@ -651,7 +757,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 106
+			sortorder => 116
 		},
 		'NotRatedNotRecentlyPlayed' => {
 			id => 'NotRatedNotRecentlyPlayed',
@@ -661,7 +767,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 107
+			sortorder => 117
 		},
 		'NotRatedLastAdded' => {
 			id => 'NotRatedLastAdded',
@@ -671,7 +777,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 108
+			sortorder => 118
 		},
 		'NotRatedNotRecentlyAdded' => {
 			id => 'NotRatedNotRecentlyAdded',
@@ -681,7 +787,7 @@ sub initPrefs {
 			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
-			sortorder => 109
+			sortorder => 119
 		},
 	};
 }
@@ -1393,7 +1499,6 @@ sub getItemsForStats {
 	} elsif ($listType eq 'tracks') {
 		$sql .= " tracks.id, tracks.title, tracks.year, albums.id, albums.title, albums.artwork, contributor_track.contributor, contributors.name";
 		$sql .= ", ifnull(tracks_persistent.rating,0)";
-		$sql .= "/20" if $prefs->get('usefivestarscale');
 		$sql .= " as trackrating";
 		$sql .= ", ifnull($table.playCount,0) as trackpc";
 		$sql .= ", ifnull(alternativeplaycount.skipCount,0) as trackskipcount" if $apc_enabled;
@@ -1454,6 +1559,9 @@ sub getItemsForStats {
 		if ($selectedlistid =~ /NotRated/) {
 			$sql .= " and ifnull(tracks_persistent.rating,0) = 0";
 		}
+		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/)) {
+			$sql .= " and ifnull(tracks_persistent.rating,0) > 0";
+		}
 		if ($apc_enabled) {
 			if ($selectedlistid =~ /MostSkipped/ || $selectedlistid =~ /LeastSkipped/) {
 				$sql .= " and alternativeplaycount.skipCount is not null";
@@ -1488,12 +1596,12 @@ sub getItemsForStats {
 		if ($selectedlistid =~ /MostPlayed/ || $selectedlistid =~ /LeastPlayed/) {
 			$sql .= " and avgplaycount > 0";
 		}
+		if ($selectedlistid =~ /NeverPlayed/) {
+			$sql .= " and avgplaycount = 0";
+		}
 		if ($selectedlistid =~ /SpecificRating\d+/) {
 			my ($rating) = $selectedlistid =~ /SpecificRating(\d+)/;
 			$sql .= " and avgrating >= ($rating - 5) and avgrating <= ($rating + 4)";
-		}
-		if ($selectedlistid =~ /NeverPlayed/) {
-			$sql .= " and avgplaycount = 0";
 		}
 		if ($selectedlistid =~ /TopRated/) {
 			$sql .= " and avgrating >= $topratedMinRating";
@@ -1501,11 +1609,14 @@ sub getItemsForStats {
 		if ($selectedlistid =~ /NotRated/) {
 			$sql .= " and avgrating = 0";
 		}
-		if ($selectedlistid =~ /PartlyPlayed/) {
-			$sql .= " and min(ifnull($table.playCount,0)) = 0 and avgplaycount > 0";
-		}
 		if ($selectedlistid =~ /NotCompletelyRated/) {
 			$sql .= " and min(ifnull(tracks_persistent.rating,0)) = 0 and avgrating > 0";
+		}
+		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/)) {
+			$sql .= " and avgrating > 0";
+		}
+		if ($selectedlistid =~ /PartlyPlayed/) {
+			$sql .= " and min(ifnull($table.playCount,0)) = 0 and avgplaycount > 0";
 		}
 		if ($selectedlistid =~ /LastPlayed/ || $selectedlistid =~ /FirstPlayed/) {
 			if ($selectedlistid =~ /LastPlayed/ && $recentlyPlayedPeriod) {
@@ -1527,7 +1638,7 @@ sub getItemsForStats {
 	$sql .= " ORDER by";
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'rating'}) {
 		if ($listType eq 'albums' || $listType eq 'artists') {
-			$sql .= $selectedlistid =~ /TopRatedAverage/ ? " avgrating" : " totalrating";
+			$sql .= $selectedlistid =~ /RatedAverage/ ? " avgrating" : " totalrating";
 		} else {
 			$sql .= " trackrating";
 		}
@@ -1664,6 +1775,8 @@ sub getItemsForStats {
 				my $ratingtext = ($trackRating > 4) ? getAppendedRatingText($trackRating, 'appended') : '';
 				$trackTitle = trimStringLength(Slim::Utils::Unicode::utf8decode($trackTitle, 'utf8'), ($jive ? 60 : 70)).$ratingtext;
 				main::DEBUGLOG && $log->is_debug && $log->debug(Slim::Utils::Unicode::encodingFromString($trackTitle).": ".$trackTitle);
+				$trackRating = round($trackRating/20) if $prefs->get('usefivestarscale');
+
 				push (@matchingItems, {
 					id => $trackID,
 					tracktitle => $trackTitle,
