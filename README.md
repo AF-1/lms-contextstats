@@ -22,17 +22,9 @@ If you use this plugin and like it, perhaps you could give it a :star: so that o
 
 ## Installation
 
-### Using the repository URL
+**Context Stats** is available from the LMS plugin library: **LMS > Settings > Manage Plugins**.<br>
 
-- Add the repository URL below at the bottom of *LMS* > *Settings* > *Plugins* and click *Apply*:<br>
-[https://raw.githubusercontent.com/AF-1/sobras/main/repos/lmsghonly/public.xml](https://raw.githubusercontent.com/AF-1/sobras/main/repos/lmsghonly/public.xml)
-
-- Install the plugin from the added repository at the bottom of the page.
-<br>
-
-### Manual Install
-
-Please read the instructions on how to [install a plugin manually](https://github.com/AF-1/sobras/wiki/Manual-installation-of-LMS-plugins).
+If you want to test a new patch that hasn't made it into a release version yet, you'll have to [install the plugin manually](https://github.com/AF-1/sobras/wiki/Manual-installation-of-LMS-plugins).
 <br><br><br>
 
 ## Reporting a new issue
