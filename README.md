@@ -1,9 +1,9 @@
 Context Stats
 ====
 
-**Context Stats**[^1] lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of artists, albums, genres, years and playlists.<br><br>For more general library statistics (e.g. genres with the most or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.<br><br>
-If you use this plugin and like it, perhaps you could give it a :star: so that other users can discover it (in their News Feed). Thank you.
+**Context Stats**[^1] lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of artists, albums, genres, years and playlists.<br><br>For more general library statistics (e.g. genres with the most or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.
 <br><br>
+
 ## Requirements
 
 - LMS version >= 8.**4**
