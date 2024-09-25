@@ -7,7 +7,7 @@ If you use this plugin and like it, perhaps you could give it a :star: so that o
 ## Requirements
 
 - LMS version >= 8.**4**
-- LMS database = **SQLite**
+- LMS database = SQLite
 
 <br>
 <a href="https://github.com/AF-1/">⬅️ <b>Back to the list of all plugins</b></a>
