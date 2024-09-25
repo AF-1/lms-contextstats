@@ -99,7 +99,7 @@ sub initPrefs {
 		usefivestarscale => 1,
 		topratedminrating => 60,
 	});
-	$prefs->set('topratedminrating', 60) if !$prefs->get('topratedminrating');
+	$prefs->set('topratedminrating', 60) if !$prefs->get('topratedminrating'); # remove in future release
 
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 1, 'high' => 100}, 'min_album_tracks');
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 5, 'high' => 500}, 'listlimit');
