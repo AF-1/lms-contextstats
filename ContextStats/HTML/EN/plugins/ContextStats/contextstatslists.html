@@ -9,6 +9,14 @@
 	align-items : center;
 	justify-content : flex-start;
 }
+.cover {
+	flex: 0 0 50px;
+}
+.cover img { height: 50px; }
+.textwrapper {
+	padding-left: 20px;
+	vertical-align: center;
+}
 .firstline {
 	font-size: [% IF systemSkin != 'Classic' %]12[% ELSE %]11[% END %]px;
 }
@@ -20,10 +28,7 @@
 	margin-top: 4px;
 	font-size: [% IF systemSkin != 'Classic' %]10[% ELSE %]9[% END %]px;
 }
-.textwrapper {
-	padding-left: 20px;
-	vertical-align: center;
-}
+
 .underline-on-hover:hover {text-decoration: underline;}
 
 .container {
@@ -257,10 +262,10 @@
 			[%- WRAPPER contentitem controls='controls' %]
 			<span class="cswrapper">
 				[% IF systemSkin != 'Classic' %]
-				<span class="flexitem">
+				<span class="flexitem cover">
 					[% IF listtype == 'artists' %]
 					<a class="underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.id %]&linktitle=BROWSE_BY_ALBUM&player=[% playerURI %]/">
-					<img [% IF item.artistimage %]src="[% webroot %][% item.artistimage %]/image_50x50_o" srcset="% webroot %][% item.artistimage %]/cover_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/artist.png"[% END %] width="35" height="35" onload="resize(this, 35)">
+					<img [% IF item.artistimage %]src="[% webroot %][% item.artistimage %]/image_50x50_o" srcset="% webroot %][% item.artistimage %]/image_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/artist.png"[% END %] onload="resize(this, 50)">
 					</a>
 					[% ELSE %]
 						[% IF listtype == 'albums' %]
@@ -268,7 +273,7 @@
 						[% ELSE %]
 						<a class="underline-on-hover" href="[% webroot %]songinfo.html?item=[% item.id %]&amp;player=[% playerURI %]">
 						[% END %]
-						<img [% IF item.artworkid %]src="/music/[% item.artworkid %]/cover_350x35_o" srcset="/music/[% item.artworkid %]/cover_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/coverplaceholder.png"[% END %] width="35" height="35" onload="resize(this, 35)">
+						<img [% IF item.artworkid %]src="/music/[% item.artworkid %]/cover_50x50_o" srcset="/music/[% item.artworkid %]/cover_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/coverplaceholder.png"[% END %] onload="resize(this, 50)">
 						</a>
 					[% END %]
 				</span>

@@ -45,7 +45,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 my $serverPrefs = preferences('server');
 my $prefs = preferences('plugin.contextstats');
 
-my ($listTypes, $apc_enabled, $MAIprefs);
+my ($listTypes, $apc_enabled);
 
 sub initPlugin {
 	my $class = shift;
@@ -80,9 +80,6 @@ sub postinitPlugin {
 	$apc_enabled = Slim::Utils::PluginManager->isEnabled('Plugins::AlternativePlayCount::Plugin');
 	main::DEBUGLOG && $log->is_debug && $log->debug('Plugin "Alternative Play Count" is enabled') if $apc_enabled;
 
-	if (Slim::Utils::PluginManager->isEnabled('Plugins::MusicArtistInfo::Plugin')) {
-		$MAIprefs = preferences('plugin.musicartistinfo');
-	}
 	registerJiveMenu($class) if $prefs->get('browsemenuitem');
 }
 
@@ -1482,7 +1479,7 @@ sub getItemsForStats {
 	my $sql = "SELECT";
 	if ($listType eq 'albums' || $listType eq 'artists') {
 		$sql .= " albums.id, albums.title, albums.year, albums.artwork, contributor_album.contributor, contributors.name" if $listType eq 'albums';
-		$sql .= " contributor_track.contributor, contributors.name" if $listType eq 'artists';
+		$sql .= " contributor_track.contributor, contributors.name, contributors.portraitid" if $listType eq 'artists';
 		$sql .= ", avg(ifnull(tracks_persistent.rating,0))";
 		$sql .= "/20" if $prefs->get('usefivestarscale');
 		$sql .= " as avgrating";
@@ -1690,7 +1687,7 @@ sub getItemsForStats {
 		my $sth = $dbh->prepare($sql);
 		$sth->execute() or do {$sql = undef;};
 
-		my ($trackID, $trackTitle, $trackYear, $albumID, $albumTitle, $albumYear, $albumArtwork, $artistID, $artistName);
+		my ($trackID, $trackTitle, $trackYear, $albumID, $albumTitle, $albumYear, $albumArtwork, $artistID, $artistName, $artistPortraitID);
 		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV);
 
 		if ($listType eq 'albums') {
@@ -1710,13 +1707,14 @@ sub getItemsForStats {
 		} elsif ($listType eq 'artists') {
 			$sth->bind_col(1,\$artistID);
 			$sth->bind_col(2,\$artistName);
-			$sth->bind_col(3,\$avgRating);
-			$sth->bind_col(4,\$totalRating);
-			$sth->bind_col(5,\$avgPC);
-			$sth->bind_col(6,\$totalPC);
-			$sth->bind_col(7,\$avgSC) if $apc_enabled;
-			$sth->bind_col(8,\$totalSC) if $apc_enabled;
-			$sth->bind_col(9,\$avgDPSV) if $apc_enabled;
+			$sth->bind_col(3,\$artistPortraitID);
+			$sth->bind_col(4,\$avgRating);
+			$sth->bind_col(5,\$totalRating);
+			$sth->bind_col(6,\$avgPC);
+			$sth->bind_col(7,\$totalPC);
+			$sth->bind_col(8,\$avgSC) if $apc_enabled;
+			$sth->bind_col(9,\$totalSC) if $apc_enabled;
+			$sth->bind_col(10,\$avgDPSV) if $apc_enabled;
 		} else {
 			$sth->bind_col(1,\$trackID);
 			$sth->bind_col(2,\$trackTitle);
@@ -1753,8 +1751,8 @@ sub getItemsForStats {
 			}
 			if ($listType eq 'artists') {
 				my $artistImage;
-				if (defined($MAIprefs) && $MAIprefs->get('browseArtistPictures')) {
-					$artistImage = 'imageproxy/mai/artist/' . ($artistID || 0);
+				unless ($serverPrefs->get('noContributorPictures')) {
+					$artistImage = 'contributor/' . ($artistPortraitID || 0);
 				}
 				push (@matchingItems, {
 					id => $artistID,
