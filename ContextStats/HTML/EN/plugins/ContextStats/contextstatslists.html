@@ -8,13 +8,19 @@
 	display: flex;
 	align-items : center;
 	justify-content : flex-start;
+[% IF listtype == 'artists' && noContributorPictures %]
+	padding: 5 0 5 0;
+[% END %]
 }
 .cover {
 	flex: 0 0 50px;
 }
 .cover img { height: 50px; }
+
 .textwrapper {
+[% UNLESS listtype == 'artists' && noContributorPictures %]
 	padding-left: 20px;
+[% END %]
 	vertical-align: center;
 }
 .firstline {
@@ -22,6 +28,7 @@
 }
 .secondline {
 	margin-top: 4px;
+	display: inline-block;
 	font-size: [% IF systemSkin != 'Classic' %]11[% ELSE %]10[% END %]px;
 }
 .thirdline {
@@ -224,7 +231,7 @@
 			[% END %]
 			[%- WRAPPER contentitem controls='controls_allsongs' %]
 			<span class="cswrapper">
-				[% IF systemSkin != 'Classic' %]<span class="flexitem"><img src="[% webroot %]plugins/ContextStats/html/images/allsongs.png" width="35" height="35"></span>[% END %]
+				[% IF systemSkin != 'Classic' %][% UNLESS noContributorPictures %]<span class="flexitem"><img src="[% webroot %]plugins/ContextStats/html/images/allsongs_svg.png" width="50" height="50"></span>[% END %][% END %]
 				<span class="flexitem firstline textwrapper">
 					[% IF listtype == 'artists' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLARTISTS' | string %][% ELSIF listtype == 'albums' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLALBUMS' | string %][% ELSE %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALLTRACKS' | string %][% END %] ([% itemcount %])
 				</span>
@@ -262,10 +269,11 @@
 			[%- WRAPPER contentitem controls='controls' %]
 			<span class="cswrapper">
 				[% IF systemSkin != 'Classic' %]
+				[% UNLESS noContributorPictures %]
 				<span class="flexitem cover">
 					[% IF listtype == 'artists' %]
 					<a class="underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.id %]&linktitle=BROWSE_BY_ALBUM&player=[% playerURI %]/">
-					<img [% IF item.artistimage %]src="[% webroot %][% item.artistimage %]/image_50x50_o" srcset="% webroot %][% item.artistimage %]/image_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/artist.png"[% END %] onload="resize(this, 50)">
+					<img [% IF item.artistimage %]src="[% webroot %][% item.artistimage %]/image_50x50_o" srcset="[% webroot %][% item.artistimage %]/image_100x100_o 2x"[% ELSE %]src="[% webroot %]plugins/ContextStats/html/images/artist.png"[% END %] onload="resize(this, 50)">
 					</a>
 					[% ELSE %]
 						[% IF listtype == 'albums' %]
@@ -277,6 +285,7 @@
 						</a>
 					[% END %]
 				</span>
+				[% END %]
 				[% END %]
 				<span class="flexitem textwrapper">
 					[% IF listtype == 'albums' %]

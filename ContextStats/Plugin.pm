@@ -45,6 +45,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 my $serverPrefs = preferences('server');
 my $prefs = preferences('plugin.contextstats');
 
+use constant CAN_LMS_ARTIST_ARTWORK => (Slim::Utils::Versions->compareVersions($::VERSION, '9.1.0') >= 0 && Slim::Music::Artwork->can('generateImageId')) ? 1 : 0;
 my ($listTypes, $apc_enabled);
 
 sub initPlugin {
@@ -940,6 +941,7 @@ sub _statsListsMenuWeb {
 		$client->execute(['contextstats', 'plcontrolcmd', $action, $listType, 'ids:'.$actionTrackIDs]);
 	}
 
+	$params->{'noContributorPictures'} = 1 if $listType eq 'artists' && (!CAN_LMS_ARTIST_ARTWORK || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures')));
 	$params->{'decade'} = (floor($params->{'objectid'}/10) * 10 + 0).'s' if ($params->{'context'} eq 'year');
 	$params->{'apcenabled'} = $apc_enabled;
 	$params->{'displayxtraline'} = $prefs->get('displayxtraline');
@@ -1098,6 +1100,7 @@ sub _jiveGetItems {
 		return;
 	}
 
+	my $materialCaller = 1 if (defined($request->{'_connectionid'}) && $request->{'_connectionid'} =~ 'Slim::Web::HTTP::ClientConn' && defined($request->{'_source'}) && $request->{'_source'} eq 'JSONRPC');
 	my $selectedListID = _getRequestParamVal($request, 'selectedlistid');
 	my $context = _getRequestParamVal($request, 'context');
 	my $listType = _getRequestParamVal($request, 'listtype');
@@ -1150,13 +1153,11 @@ sub _jiveGetItems {
 
 				if ($listType eq 'artists') {
 					# id, artistname, artistimage, rating, playcount, skipcount, dpsv
-					my $artistImgUrl;
-					if ($thisItem->{'artistimage'}) {
-						$artistImgUrl = $thisItem->{'artistimage'}.'/image_50x50_o'; ## srcset="% webroot %][% item.artistimage %]/cover_100x100_o 2x"
-					} else {
-						$artistImgUrl = 'plugins/ContextStats/html/images/artist.png'
+					my $artistImgUrl = 'plugins/ContextStats/html/images/artist.png';
+					$artistImgUrl = $thisItem->{'artistimage'}.'/image_100x100_o' if (CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures') && $thisItem->{'artistimage'});
+					if ((CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures')) || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures') && !$materialCaller) || (!CAN_LMS_ARTIST_ARTWORK && !$materialCaller)) {
+						$request->addResultLoop('item_loop', $cnt, 'icon', $artistImgUrl);
 					}
-					$request->addResultLoop('item_loop', $cnt, 'icon', $artistImgUrl);
 
 					$returntext = $thisItem->{'artistname'};
 					$returntext .= "\n".string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT').': '.$thisItem->{'avgrating'}.' '.$sepChar.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT').': '.$thisItem->{'totalrating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT').': '.$thisItem->{'avgplaycount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT').': '.$thisItem->{'totalplaycount'};
@@ -1219,7 +1220,10 @@ sub _jiveGetItems {
 
 				$request->addResultLoop('item_loop', 0, 'type', 'redirect');
 				$request->addResultLoop('item_loop', 0, 'actions', $actions);
-				$request->addResultLoop('item_loop', 0, 'icon', 'plugins/ContextStats/html/images/allsongs.png');
+				unless ($listType eq 'artists' && $materialCaller &&
+				(!CAN_LMS_ARTIST_ARTWORK || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures')))) {
+					$request->addResultLoop('item_loop', 0, 'icon', 'plugins/ContextStats/html/images/allsongs_svg.png');
+				}				
 				$request->addResultLoop('item_loop', 0, 'text', $returnText.' ('.$itemCount.')');
 				$cnt++;
 			}
@@ -1479,7 +1483,14 @@ sub getItemsForStats {
 	my $sql = "SELECT";
 	if ($listType eq 'albums' || $listType eq 'artists') {
 		$sql .= " albums.id, albums.title, albums.year, albums.artwork, contributor_album.contributor, contributors.name" if $listType eq 'albums';
-		$sql .= " contributor_track.contributor, contributors.name, contributors.portraitid" if $listType eq 'artists';
+		if ($listType eq 'artists') {
+			$sql .= " contributor_track.contributor, contributors.name";
+			if (CAN_LMS_ARTIST_ARTWORK) {
+				$sql .= ", contributors.portraitid";
+			} else {
+				$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
+			}
+		}
 		$sql .= ", avg(ifnull(tracks_persistent.rating,0))";
 		$sql .= "/20" if $prefs->get('usefivestarscale');
 		$sql .= " as avgrating";
@@ -1751,7 +1762,7 @@ sub getItemsForStats {
 			}
 			if ($listType eq 'artists') {
 				my $artistImage;
-				unless ($serverPrefs->get('noContributorPictures')) {
+				if (CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures')) {
 					$artistImage = 'contributor/' . ($artistPortraitID || 0);
 				}
 				push (@matchingItems, {
