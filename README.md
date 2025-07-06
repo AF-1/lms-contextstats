@@ -1,7 +1,7 @@
 Context Stats
 ====
 
-**Context Stats**[^1] lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of a selected artist, album, genre, year and playlist. Enabling *Display home menu item* in the plugin settings adds lists of tracks, albums or artists sorted by statistics for your **entire** music library.<br><br>For more general library statistics (e.g. genres with the most or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.
+**Context Stats** lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of a selected artist, album, genre, year and playlist. Enabling *Display home menu item* in the plugin settings adds lists of tracks, albums or artists sorted by statistics for your **entire** music library.<br><br>For more general library statistics (e.g. genres with the most or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.
 <br><br>
 
 ## Requirements
@@ -14,7 +14,7 @@ Context Stats
 <br><br><br>
 
 
-## Screenshots[^2]
+## Screenshots[^1]
 
 <img src="screenshots/cs.gif" width="100%">
 <br><br><br>
@@ -54,8 +54,8 @@ If you find this project useful, giving it a <img src="screenshots/githubstar.pn
 This happens if the LMS database contains <i>more than one</i> contributor for the <i>same</i> contributor <i>role</i> (artist, album artist, track artist, band).<br>
 Artists and albums lists in <i>Context Stats</i> will have items for each contributor (with identical total rating, play count and skip count values).</p></details><br>
 
-<br><br>
+<details><summary>»<b>Can this plugin be <i>displayed in my language</i>?</b>«</summary><br><p>If you want localized strings in your language, please read <a href="https://github.com/AF-1/sobras/wiki/Adding-localization-to-LMS-plugins"><b>this</b></a>.</p></details>
 
-[^1]:If you want localized strings in your language, please read <a href="https://github.com/AF-1/sobras/wiki/Adding-localization-to-LMS-plugins"><b>this</b></a>.
-inspired by Erland's TrackStat.
-[^2]: The screenshots might not correspond to the current UI in every detail.
+<br><br><br>
+
+[^1]: The screenshots might not correspond to the current UI in every detail.
