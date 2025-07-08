@@ -1,15 +1,10 @@
 Context Stats
 ====
+![Min. LMS Version](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fraw.githubusercontent.com%2FAF-1%2Fsobras%2Fmain%2Frepos%2Flms%2Fpublic.xml&query=%2F%2F*%5Blocal-name()%3D'plugin'%20and%20%40name%3D'ContextStats'%5D%2F%40minTarget&prefix=v&label=Min.%20LMS%20Version%20Required&color=darkgreen)<br>
 
 **Context Stats** lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of a selected artist, album, genre, year and playlist. Enabling *Display home menu item* in the plugin settings adds lists of tracks, albums or artists sorted by statistics for your **entire** music library.<br><br>For more general library statistics (e.g. genres with the most or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.
-<br><br>
+<br><br><br>
 
-## Requirements
-
-- LMS version >= 8.**4**
-- LMS database = SQLite
-
-<br>
 <a href="https://github.com/AF-1/">⬅️ <b>Back to the list of all plugins</b></a>
 <br><br><br>
 
