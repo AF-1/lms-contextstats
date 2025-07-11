@@ -11,7 +11,7 @@ PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK_TEXT
 	EN	Click here for more information (incl. FAQ).
 
 PLUGIN_CONTEXTSTATS_SETTINGS_GITHUB_LINK
-	EN	https://github.com/AF-1/#-context-stats
+	EN	https://github.com/AF-1
 
 PLUGIN_CONTEXTSTATS_HEADER
 	EN	sorted by statistics
@@ -444,10 +444,10 @@ PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE
 	EN	Display additional line with selected statistical values (web view)
 
 PLUGIN_CONTEXTSTATS_SETTINGS_XTRAINFOLINE_DESC
-	EN	Displays another line with these statistical values for listed tracks, albums and artists:<br>rating, play count, skip count, dynamic played/skipped value.<br>(average values only for albums and artists)<br>Applies to the <b>web UI</b> only.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/#-alternative-play-count" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
+	EN	Displays another line with these statistical values for listed tracks, albums and artists:<br>rating, play count, skip count, dynamic played/skipped value.<br>(average values only for albums and artists)<br>Applies to the <b>web UI</b> only.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
 
 PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH
 	EN	Max. line length of additional<br>statistical values for <i>albums</i><br>and <i>tracks</i> (jivelite, Material)
 
 PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH_DESC
-	EN	Set the maximum character length of the line that displays rating, play count, skip count, dynamic played/skipped values for album and track lists.<br>Applies only to <b>jivelite</b> players and Material.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/#-alternative-play-count" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
+	EN	Set the maximum character length of the line that displays rating, play count, skip count, dynamic played/skipped values for album and track lists.<br>Applies only to <b>jivelite</b> players and Material.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
