@@ -3,7 +3,7 @@
 	<id>af6088cf-6bd9-6d08-ac1e-9d08f1150035</id>
 	<name>PLUGIN_CONTEXTSTATS</name>
 	<module>Plugins::ContextStats::Plugin</module>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<description>PLUGIN_CONTEXTSTATS_DESC</description>
 	<creator>AF</creator>
 	<optionsURL>plugins/ContextStats/settings/settings.html</optionsURL>
