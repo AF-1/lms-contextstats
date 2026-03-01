@@ -265,6 +265,17 @@
 					onclick="SqueezeJS.Controller.urlRequest('/anyurl?p0=playlistcontrol&p1=cmd:load&p2=[% IF listtype == 'albums' %]album[% ELSIF listtype == 'artists' %]artist[% ELSE %]track[% END %]_id:[% item.id %]&player=[% playerURI %]', 1);"
 					[% END %]
 				[% END %]
+				[% IF systemSkin != 'Classic' %]
+					[% WRAPPER morelink noTarget=1 -%]
+						[% IF listtype == 'artists' %]
+						href="[% webroot %]clixmlbrowser/clicmd=artistinfo+items&artist_id=[% item.id %]&useContextMenu=1&player=[% playerURI %]"
+						[% ELSIF listtype == 'albums' %]
+						href="[% webroot %]clixmlbrowser/clicmd=albuminfo+items&album_id=[% item.id %]&useContextMenu=1&player=[% playerURI %]"
+						[% ELSE %]
+						href="[% webroot %]clixmlbrowser/clicmd=trackinfo+items&track_id=[% item.id %]&useContextMenu=1&player=[% playerURI %]"
+						[% END %]
+					[% END %]
+				[% END %]
 			[% END %]
 			[%- WRAPPER contentitem controls='controls' %]
 			<span class="cswrapper">

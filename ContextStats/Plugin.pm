@@ -46,7 +46,7 @@ my $serverPrefs = preferences('server');
 my $prefs = preferences('plugin.contextstats');
 
 use constant CAN_LMS_ARTIST_ARTWORK => (Slim::Utils::Versions->compareVersions($::VERSION, '9.1.0') >= 0 && Slim::Music::Artwork->can('generateImageId')) ? 1 : 0;
-my ($listTypes, $apc_enabled);
+my ($listTypes, $apc_enabled, $ratingslightv3_enabled);
 
 sub initPlugin {
 	my $class = shift;
@@ -67,7 +67,7 @@ sub initPlugin {
 
 	registerContextMenuItems();
 
-#	Slim::Control::Request::addDispatch  C  Q  T
+	# Slim::Control::Request::addDispatch  C  Q  T
 	Slim::Control::Request::addDispatch(['contextstats', 'plcontrolcmd', '_cmd', '_listtype', '_ids'], [1, 0, 1, \&_multipleIdsPLcontrol]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jiveyearmenu', '_context', '_listtype', '_objectid', '_objectname'], [1, 0, 1, \&_jiveYearOrDecadeSel]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jivestatslistsmenu', '_context', '_listtype', '_objectid', '_objectname', '_usedecade'], [1, 0, 1, \&_jiveStatsListsMenu]);
@@ -81,6 +81,13 @@ sub postinitPlugin {
 	$apc_enabled = Slim::Utils::PluginManager->isEnabled('Plugins::AlternativePlayCount::Plugin');
 	main::DEBUGLOG && $log->is_debug && $log->debug('Plugin "Alternative Play Count" is enabled') if $apc_enabled;
 
+	if (Slim::Utils::PluginManager->isEnabled('Plugins::RatingsLight::Plugin')) {
+		my $pluginVersion = Slim::Utils::PluginManager->dataForPlugin('Plugins::RatingsLight::Plugin')->{'version'};
+		if (Slim::Utils::Versions->compareVersions($pluginVersion, '3.0') >= 0) {
+			$ratingslightv3_enabled = 1;
+			main::DEBUGLOG && $log->is_debug && $log->debug('Ratings Light version 3+ is enabled');
+		}
+	}
 	registerJiveMenu($class) if $prefs->get('browsemenuitem');
 }
 
@@ -96,6 +103,7 @@ sub initPrefs {
 		jiveextralinelength => 82,
 		usefivestarscale => 1,
 		topratedminrating => 60,
+		ratingchangedperiod => 0
 	});
 	$prefs->set('topratedminrating', 60) if !$prefs->get('topratedminrating'); # remove in future release
 
@@ -113,7 +121,7 @@ sub initPrefs {
 	}, 'contextmenuposition');
 
 	$listTypes = {
-		#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval'
+		#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval', 'lastRated', 'prevRating'
 		'LastPlayed' => {
 			id => 'LastPlayed',
 			name => string('PLUGIN_CONTEXTSTATS_LASTPLAYED'),
@@ -215,7 +223,7 @@ sub initPrefs {
 			sortorder => 15
 		},
 		'MostPlayedLastAdded' => {
-			id => 'MostPlayedAverageLastAdded',
+			id => 'MostPlayedLastAdded',
 			name => string('PLUGIN_CONTEXTSTATS_MOSTPLAYEDLASTADDED'),
 			apc => 0,
 			reqstats => {'playCount' => 1, 'added' => 1},
@@ -787,6 +795,39 @@ sub initPrefs {
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
 			sortorder => 119
 		},
+		'RatingChanged' => {
+			id => 'RatingChanged',
+			name => string('PLUGIN_CONTEXTSTATS_RATINGCHANGED'),
+			apc => 0,
+			rl3 => 1,
+			reqstats => {'lastRated' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {'artist' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
+			sortorder => 120
+		},
+		'RatingRaised' => {
+			id => 'RatingRaised',
+			name => string('PLUGIN_CONTEXTSTATS_RATINGRAISED'),
+			apc => 0,
+			rl3 => 1,
+			reqstats => {'lastRated' => 1, 'prevRating' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {},
+			artistsvalidcontext => {},
+			sortorder => 121
+		},
+		'RatingLowered' => {
+			id => 'RatingLowered',
+			name => string('PLUGIN_CONTEXTSTATS_RATINGLOWERED'),
+			apc => 0,
+			rl3 => 1,
+			reqstats => {'lastRated' => 1, 'prevRating' => 1},
+			tracksvalidcontext => {'artist' => 1, 'album' => 1, 'genre' => 1, 'year' => 1, 'playlist' => 1},
+			albumsvalidcontext => {},
+			artistsvalidcontext => {},
+			sortorder => 122
+		},
 	};
 }
 
@@ -1180,7 +1221,7 @@ sub _jiveGetItems {
 					# id, tracktitle, year, albumID, albumtitle, artworkid, artistID, artistname, rating, playcount, skipcount, dpsv
 
 					$returntext = $thisItem->{'tracktitle'}."\n";
-					my $suffix .= string('PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT').': '.$thisItem->{'rating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT').': '.$thisItem->{'playcount'};
+					my $suffix = string('PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT').': '.$thisItem->{'rating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT').': '.$thisItem->{'playcount'};
 					$suffix .= ' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT').': '.$thisItem->{'skipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV').': '.$thisItem->{'dpsv'} if $apc_enabled;
 					my $jiveExtraLineLength = $prefs->get('jiveextralinelength');
 					my $artistnameLength = (($jiveExtraLineLength - length($suffix)) > 0) ? ($jiveExtraLineLength - length($suffix)) : 0;
@@ -1223,7 +1264,7 @@ sub _jiveGetItems {
 				unless ($listType eq 'artists' && $materialCaller &&
 				(!CAN_LMS_ARTIST_ARTWORK || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures')))) {
 					$request->addResultLoop('item_loop', 0, 'icon', 'plugins/ContextStats/html/images/allsongs_svg.png');
-				}				
+				}
 				$request->addResultLoop('item_loop', 0, 'text', $returnText.' ('.$itemCount.')');
 				$cnt++;
 			}
@@ -1429,6 +1470,7 @@ sub getListsForContext {
 
 	my $recentlyAddedPeriod = $prefs->get('recentlyaddedperiod');
 	my $recentlyPlayedPeriod = $prefs->get('recentlyplayedperiod');
+	my $ratingChangedPeriod = $prefs->get('ratingchangedperiod');
 	my $validListTypes = {};
 
 	foreach my $thisItem (keys %{$listTypes}) {
@@ -1456,6 +1498,7 @@ sub getListsForContext {
 		next if lc($listTypes->{$thisItem}{'id'}) =~ 'recentlyadded' && !$recentlyAddedPeriod;
 		next if lc($listTypes->{$thisItem}{'id'}) =~ 'recentlyplayed' && !$recentlyPlayedPeriod;
 		next if $listTypes->{$thisItem}{'apc'} && !$apc_enabled;
+		next if $listTypes->{$thisItem}{'rl3'} && !$ratingslightv3_enabled;
 
 		$validListTypes->{$thisItem} = $listTypes->{$thisItem};
 	}
@@ -1476,34 +1519,95 @@ sub getItemsForStats {
 	my $topratedMinRating = $prefs->get('topratedminrating');
 	my $recentlyPlayedPeriod = $prefs->get('recentlyplayedperiod');
 	my $recentlyAddedPeriod = $prefs->get('recentlyaddedperiod');
+	my $ratingChangedPeriod = $prefs->get('ratingchangedperiod');
 	my $VAid = Slim::Schema->variousArtistsObject->id;
 
 	#### build sql query ####
-	# select
+	# For albums and tracks, the query is built in a single pass.
+	# For artists, a subquery is used to deduplicate tracks per artist before
+	# aggregation. Without it, tracks with multiple contributor roles (e.g. role 1
+	# AND role 5 for the same artist) would be counted multiple times in
+	# avg(), sum() and min() aggregations.
+
 	my $sql = "SELECT";
-	if ($listType eq 'albums' || $listType eq 'artists') {
-		$sql .= " albums.id, albums.title, albums.year, albums.artwork, contributor_album.contributor, contributors.name" if $listType eq 'albums';
-		if ($listType eq 'artists') {
-			$sql .= " contributor_track.contributor, contributors.name";
-			if (CAN_LMS_ARTIST_ARTWORK) {
-				$sql .= ", contributors.portraitid";
-			} else {
-				$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
-			}
-		}
+	if ($listType eq 'albums') {
+		$sql .= " albums.id, albums.title, albums.year, albums.artwork, contributor_album.contributor, contributors.name";
 		$sql .= ", avg(ifnull(tracks_persistent.rating,0))";
 		$sql .= "/20" if $prefs->get('usefivestarscale');
 		$sql .= " as avgrating";
-		$sql .= ", (sum(ifnull(tracks_persistent.rating,0))";
+		$sql .= ", sum(ifnull(tracks_persistent.rating,0))";
 		$sql .= "/20" if $prefs->get('usefivestarscale');
-		$sql .= ")/count(distinct ".($listType eq 'artists' ? "contributor_track.role" : "contributor_album.role").") as totalrating";
+		$sql .= " as totalrating";
 		$sql .= ", avg(ifnull($table.playCount,0)) as avgplaycount";
-		$sql .= ", sum(ifnull($table.playCount,0))/count(distinct ".($listType eq 'artists' ? "contributor_track.role" : "contributor_album.role").") as totalplaycount";
+		$sql .= ", sum(ifnull($table.playCount,0)) as totalplaycount";
 		if ($apc_enabled) {
 			$sql .= ", avg(ifnull(alternativeplaycount.skipCount,0)) as avgskipcount";
-			$sql .= ", sum(ifnull(alternativeplaycount.skipCount,0))/count(distinct ".($listType eq 'artists' ? "contributor_track.role" : "contributor_album.role").") as totalskipcount";
+			$sql .= ", sum(ifnull(alternativeplaycount.skipCount,0)) as totalskipcount";
 			$sql .= ", avg(ifnull(alternativeplaycount.dynPSval,0)) as avgDPSV";
 		}
+		$sql .= ", max($table.lastPlayed) as maxlastplayed";
+		$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as maxlastskipped" if $apc_enabled;
+		$sql .= ", max(tracks_persistent.added) as maxadded";
+		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as maxlastrated" if $ratingslightv3_enabled;
+		$sql .= " from tracks";
+		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
+		$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role == 5 join contributors on contributor_album.contributor = contributors.id";
+		$sql .= " and contributor_album.contributor = $objectid" if $context eq 'artist';
+		$sql .= " join albums on tracks.album = albums.id";
+		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
+		$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
+		$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
+		$sql .= " join playlist_track on tracks.url = playlist_track.track and playlist_track.playlist = $objectid" if $context eq 'playlist';
+		$sql .= " WHERE tracks.audio = 1";
+	} elsif ($listType eq 'artists') {
+		# outer select - aggregates over the deduplicated inner result set
+		$sql .= " t.contributor, contributors.name";
+		if (CAN_LMS_ARTIST_ARTWORK) {
+			$sql .= ", contributors.portraitid";
+		} else {
+			$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
+		}
+		$sql .= ", avg(t.rating)";
+		$sql .= "/20" if $prefs->get('usefivestarscale');
+		$sql .= " as avgrating";
+		$sql .= ", sum(t.rating)";
+		$sql .= "/20" if $prefs->get('usefivestarscale');
+		$sql .= " as totalrating";
+		$sql .= ", avg(t.playCount) as avgplaycount";
+		$sql .= ", sum(t.playCount) as totalplaycount";
+		if ($apc_enabled) {
+			$sql .= ", avg(t.skipCount) as avgskipcount";
+			$sql .= ", sum(t.skipCount) as totalskipcount";
+			$sql .= ", avg(t.dynPSval) as avgDPSV";
+		}
+		$sql .= ", max(t.lastPlayed) as maxlastplayed";
+		$sql .= ", max(t.lastSkipped) as maxlastskipped" if $apc_enabled;
+		$sql .= ", max(t.added) as maxadded";
+		$sql .= ", max(t.lastRated) as maxlastrated" if $ratingslightv3_enabled;
+		# inner subquery: produces exactly one row per (track, artist contributor)
+		$sql .= " FROM (SELECT tracks.id, tracks.year, contributor_track.contributor";
+		$sql .= ", ifnull(tracks_persistent.rating,0) as rating";
+		$sql .= ", ifnull($table.playCount,0) as playCount";
+		if ($apc_enabled) {
+			$sql .= ", ifnull(alternativeplaycount.skipCount,0) as skipCount";
+			$sql .= ", ifnull(alternativeplaycount.dynPSval,0) as dynPSval";
+			$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as lastSkipped";
+		}
+		$sql .= ", max(ifnull($table.lastPlayed,0)) as lastPlayed";
+		$sql .= ", max(ifnull(tracks_persistent.added,0)) as added";
+		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as lastRated" if $ratingslightv3_enabled;
+		$sql .= " FROM tracks";
+		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
+		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,4,5,6)";
+		$sql .= " and contributor_track.contributor = $objectid" if $context eq 'artist';
+		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
+		$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
+		$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
+		$sql .= " join playlist_track on tracks.url = playlist_track.track and playlist_track.playlist = $objectid" if $context eq 'playlist';
+		$sql .= " WHERE tracks.audio = 1";
+		$sql .= " GROUP BY tracks.id, contributor_track.contributor) t";
+		$sql .= " join contributors on t.contributor = contributors.id";
+		$sql .= " WHERE 1=1";
 	} elsif ($listType eq 'tracks') {
 		$sql .= " tracks.id, tracks.title, tracks.year, albums.id, albums.title, albums.artwork, contributor_track.contributor, contributors.name";
 		$sql .= ", ifnull(tracks_persistent.rating,0)";
@@ -1511,27 +1615,21 @@ sub getItemsForStats {
 		$sql .= ", ifnull($table.playCount,0) as trackpc";
 		$sql .= ", ifnull(alternativeplaycount.skipCount,0) as trackskipcount" if $apc_enabled;
 		$sql .= ", ifnull(alternativeplaycount.dynPSval,0) as trackDPSV" if $apc_enabled;
+		$sql .= ", max($table.lastPlayed) as maxlastplayed";
+		$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as maxlastskipped" if $apc_enabled;
+		$sql .= ", max(tracks_persistent.added) as maxadded";
+		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as maxlastrated" if $ratingslightv3_enabled;
+		$sql .= " from tracks";
+		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
+		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,4,5,6) join contributors on contributor_track.contributor = contributors.id";
+		$sql .= " and contributor_track.contributor = $objectid" if $context eq 'artist';
+		$sql .= " join albums on tracks.album = albums.id";
+		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
+		$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
+		$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
+		$sql .= " join playlist_track on tracks.url = playlist_track.track and playlist_track.playlist = $objectid" if $context eq 'playlist';
+		$sql .= " WHERE tracks.audio = 1";
 	}
-	$sql .= ", max($table.lastPlayed) as maxlastplayed";
-	$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as maxlastskipped" if $apc_enabled;
-	$sql .= ", max(tracks_persistent.added) as maxadded";
-	$sql .= " from tracks";
-
-	# joins
-	$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
-	$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,4,5,6) join contributors on contributor_track.contributor = contributors.id" if ($listType eq 'artists' || $listType eq 'tracks');
-	$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role == 5 join contributors on contributor_album.contributor = contributors.id" if $listType eq 'albums';
-	$sql .= " and ".($listType eq 'albums' ? "contributor_album.contributor" : "contributor_track.contributor")." = $objectid" if $context eq 'artist';
-	$sql .= " join albums on tracks.album = albums.id" unless $listType eq 'artists';
-
-	$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
-	$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
-
-	$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
-	$sql .= " join playlist_track on tracks.url = playlist_track.track and playlist_track.playlist = $objectid" if $context eq 'playlist';
-
-	# where clauses
-	$sql .= " WHERE tracks.audio = 1";
 
 	if ($listType eq 'tracks') {
 		$sql .= " and tracks.album = $objectid" if $context eq 'album';
@@ -1567,7 +1665,7 @@ sub getItemsForStats {
 		if ($selectedlistid =~ /NotRated/) {
 			$sql .= " and ifnull(tracks_persistent.rating,0) = 0";
 		}
-		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/)) {
+		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/) && ($selectedlistid !~ /RatingChanged/) && ($selectedlistid !~ /RatingRaised/) && ($selectedlistid !~ /RatingLowered/)) {
 			$sql .= " and ifnull(tracks_persistent.rating,0) > 0";
 		}
 		if ($apc_enabled) {
@@ -1577,6 +1675,17 @@ sub getItemsForStats {
 			$sql .= " and alternativeplaycount.lastSkipped is not null" if $selectedlistid =~ /LastSkipped/;
 			$sql .= " and alternativeplaycount.dynPSval is not null" if $selectedlistid =~ /TopDPSV/;
 		}
+		if ($ratingslightv3_enabled) {
+			if ($selectedlistid eq 'RatingChanged' || $selectedlistid eq 'RatingRaised' || $selectedlistid eq 'RatingLowered') {
+				if ($ratingChangedPeriod) {
+					$sql .= " and (tracks_persistent.lastRated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod)";
+				} else {
+					$sql .= " and tracks_persistent.lastRated is not null";
+				}
+			}
+			$sql .= " and tracks_persistent.rating > ifnull(tracks_persistent.prevRating,0)" if $selectedlistid eq 'RatingRaised';
+			$sql .= " and tracks_persistent.rating < ifnull(tracks_persistent.prevRating,0)" if $selectedlistid eq 'RatingLowered';
+		}
 	}
 
 	# group
@@ -1584,21 +1693,21 @@ sub getItemsForStats {
 	if ($listType eq 'albums') {
 		$sql .= " tracks.album, contributor_album.contributor";
 	} elsif ($listType eq 'artists') {
-		$sql .= " contributor_track.contributor";
+		$sql .= " t.contributor";
 	} else {
 		$sql .= " tracks.id";
 	}
 
 	# having (artists/albums)
 	if ($listType eq 'artists' || $listType eq 'albums') {
-		$sql .= " HAVING count(tracks.id) >= ".(($context ne 'artist' && $listType eq 'albums' && $prefs->get('min_album_tracks') > 1) ? $prefs->get('min_album_tracks') : '1');
-		$sql .= " and contributor_track.contributor != $VAid" if $listType eq 'artists';
+		$sql .= " HAVING count(" . ($listType eq 'artists' ? "t.id" : "tracks.id") . ") >= ".(($context ne 'artist' && $listType eq 'albums' && $prefs->get('min_album_tracks') > 1) ? $prefs->get('min_album_tracks') : '1');
+		$sql .= " and t.contributor != $VAid" if $listType eq 'artists';
 		if ($context eq 'year') {
 			if ($useDecade) {
 				my $decade = floor($objectid/10) * 10 + 0;
-				$sql .= " and tracks.year >= $decade and tracks.year <= ($decade + 9)";
+				$sql .= " and " . ($listType eq 'artists' ? "t" : "tracks") . ".year >= $decade and " . ($listType eq 'artists' ? "t" : "tracks") . ".year <= ($decade + 9)";
 			} else {
-				$sql .= " and tracks.year = $objectid";
+				$sql .= " and " . ($listType eq 'artists' ? "t" : "tracks") . ".year = $objectid";
 			}
 		}
 		if ($selectedlistid =~ /MostPlayed/ || $selectedlistid =~ /LeastPlayed/) {
@@ -1609,80 +1718,137 @@ sub getItemsForStats {
 		}
 		if ($selectedlistid =~ /SpecificRating\d+/) {
 			my ($rating) = $selectedlistid =~ /SpecificRating(\d+)/;
-			$sql .= " and avgrating >= ($rating - 5) and avgrating <= ($rating + 4)";
+			if ($prefs->get('usefivestarscale')) {
+				my $ratingLow = ($rating - 5) / 20;
+				my $ratingHigh = ($rating + 4) / 20;
+				$sql .= " and avgrating >= $ratingLow and avgrating <= $ratingHigh";
+			} else {
+				$sql .= " and avgrating >= ($rating - 5) and avgrating <= ($rating + 4)";
+			}
 		}
 		if ($selectedlistid =~ /TopRated/) {
-			$sql .= " and avgrating >= $topratedMinRating";
+			my $topratedThreshold = $prefs->get('usefivestarscale') ? $topratedMinRating / 20 : $topratedMinRating;
+			$sql .= " and avgrating >= $topratedThreshold";
 		}
 		if ($selectedlistid =~ /NotRated/) {
 			$sql .= " and avgrating = 0";
 		}
 		if ($selectedlistid =~ /NotCompletelyRated/) {
-			$sql .= " and min(ifnull(tracks_persistent.rating,0)) = 0 and avgrating > 0";
+			$sql .= " and min(ifnull(" . ($listType eq 'artists' ? "t.rating" : "tracks_persistent.rating") . ",0)) = 0 and avgrating > 0";
 		}
-		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/)) {
+		if (($selectedlistid =~ /Rated/) && ($selectedlistid !~ /TopRated/) && ($selectedlistid !~ /NotRated/) && ($selectedlistid !~ /NotCompletelyRated/) && ($selectedlistid !~ /RatingChanged/) && ($selectedlistid !~ /RatingRaised/) && ($selectedlistid !~ /RatingLowered/)) {
 			$sql .= " and avgrating > 0";
 		}
 		if ($selectedlistid =~ /PartlyPlayed/) {
-			$sql .= " and min(ifnull($table.playCount,0)) = 0 and avgplaycount > 0";
+			$sql .= " and min(ifnull(" . ($listType eq 'artists' ? "t.playCount" : "$table.playCount") . ",0)) = 0 and avgplaycount > 0";
 		}
 		if ($selectedlistid =~ /LastPlayed/ || $selectedlistid =~ /FirstPlayed/) {
 			if ($selectedlistid =~ /LastPlayed/ && $recentlyPlayedPeriod) {
-				$sql .= " and ($table.lastPlayed >= (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+				if ($listType eq 'artists') {
+					$sql .= " and (maxlastplayed >= (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+				} else {
+					$sql .= " and ($table.lastPlayed >= (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+				}
 			} else {
-				$sql .= " and $table.lastPlayed is not null";
+				$sql .= " and " . ($listType eq 'artists' ? "maxlastplayed" : "$table.lastPlayed") . " is not null";
 			}
 		}
 		if ($selectedlistid =~ /NotRecentlyPlayed/ && $recentlyPlayedPeriod) {
-			$sql .= " and ($table.lastPlayed < (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+			if ($listType eq 'artists') {
+				$sql .= " and (maxlastplayed < (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+			} else {
+				$sql .= " and ($table.lastPlayed < (select max(ifnull($table.lastPlayed,0)) from $table) - $recentlyPlayedPeriod)";
+			}
 		}
 		if ($recentlyAddedPeriod) {
-			$sql .= " and (tracks_persistent.added >= (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /LastAdded/;
-			$sql .= " and (tracks_persistent.added < (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /NotRecentlyAdded/;
+			if ($listType eq 'artists') {
+				$sql .= " and (maxadded >= (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /LastAdded/;
+				$sql .= " and (maxadded < (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /NotRecentlyAdded/;
+			} else {
+				$sql .= " and (tracks_persistent.added >= (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /LastAdded/;
+				$sql .= " and (tracks_persistent.added < (select max(tracks_persistent.added) from tracks_persistent) - $recentlyAddedPeriod)" if $selectedlistid =~ /NotRecentlyAdded/;
+			}
+		}
+		if ($ratingslightv3_enabled && $selectedlistid eq 'RatingChanged') {
+			if ($ratingChangedPeriod) {
+				if ($listType eq 'artists') {
+					$sql .= " and (maxlastrated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod)";
+				} else {
+					$sql .= " and (tracks_persistent.lastRated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod)";
+				}
+			} else {
+				$sql .= " and " . ($listType eq 'artists' ? "maxlastrated" : "tracks_persistent.lastRated") . " is not null";
+			}
 		}
 	}
 
 	# order
-	$sql .= " ORDER by";
+	my @orderby = ();
+
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'rating'}) {
+		my $field;
 		if ($listType eq 'albums' || $listType eq 'artists') {
-			$sql .= $selectedlistid =~ /RatedAverage/ ? " avgrating" : " totalrating";
+			$field = $selectedlistid =~ /RatedAverage/ ? 'avgrating' : 'totalrating';
 		} else {
-			$sql .= " trackrating";
+			$field = 'trackrating';
 		}
-		$sql .= " desc";
+		push @orderby, "$field desc";
 	}
-	$sql .= (($listType eq 'albums' || $listType eq 'artists') ? " avgDPSV" : " trackDPSV")." desc" if $listTypes->{$selectedlistid}{'reqstats'}{'dynPSval'};
+
+	if ($listTypes->{$selectedlistid}{'reqstats'}{'dynPSval'}) {
+		my $field = ($listType eq 'albums' || $listType eq 'artists') ? 'avgDPSV' : 'trackDPSV';
+		push @orderby, "$field desc";
+	}
+
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'playCount'}) {
+		my $field;
 		if ($listType eq 'albums' || $listType eq 'artists') {
-			$sql .= $selectedlistid =~ /PlayedAverage/ ? " avgplaycount" : " totalplaycount";
+			$field = $selectedlistid =~ /PlayedAverage/ ? 'avgplaycount' : 'totalplaycount';
 		} else {
-			$sql .= " trackpc";
+			$field = 'trackpc';
 		}
-		$sql .= " desc" if $selectedlistid =~ /MostPlayed/;
-		$sql .= " asc" if $selectedlistid =~ /LeastPlayed/;
+		my $dir = $selectedlistid =~ /MostPlayed/ ? 'desc' : 'asc';
+		push @orderby, "$field $dir";
 	}
+
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'skipCount'}) {
+		my $field;
 		if ($listType eq 'albums' || $listType eq 'artists') {
-			$sql .= $selectedlistid =~ /SkippedAverage/ ? " avgskipcount" : " totalskipcount";
+			$field = $selectedlistid =~ /SkippedAverage/ ? 'avgskipcount' : 'totalskipcount';
 		} else {
-			$sql .= " trackskipcount";
+			$field = 'trackskipcount';
 		}
-		$sql .= " desc" if $selectedlistid =~ /MostSkipped/;
-		$sql .= " asc" if $selectedlistid =~ /LeastSkipped/;
+		my $dir = $selectedlistid =~ /MostSkipped/ ? 'desc' : 'asc';
+		push @orderby, "$field $dir";
 	}
-	$sql .= " maxlastskipped desc" if $listTypes->{$selectedlistid}{'reqstats'}{'lastSkipped'};
+
+	if ($listTypes->{$selectedlistid}{'reqstats'}{'lastSkipped'}) {
+		push @orderby, 'maxlastskipped desc';
+	}
+
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'lastPlayed'}) {
-		$sql .= "," if (scalar keys %{$listTypes->{$selectedlistid}{'reqstats'}} > 1);
-		$sql .= " maxlastplayed";
-		$sql .= " desc" if ($selectedlistid =~ /LastPlayed/ || $selectedlistid =~ /NotRecentlyPlayed/);
-		$sql .= " asc" if $selectedlistid =~ /FirstPlayed/;
+		my $dir;
+		if ($selectedlistid =~ /LastPlayed/ || $selectedlistid =~ /NotRecentlyPlayed/) {
+			$dir = 'desc';
+		} elsif ($selectedlistid =~ /FirstPlayed/) {
+			$dir = 'asc';
+		} else {
+			$dir = 'desc';
+		}
+		push @orderby, "maxlastplayed $dir";
 	}
+
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'added'}) {
-		$sql .= "," if (scalar keys %{$listTypes->{$selectedlistid}{'reqstats'}} > 1);
-		$sql .= " maxadded desc";
+		push @orderby, 'maxadded desc';
 	}
-	$sql .= ", random()";
+
+	if ($listTypes->{$selectedlistid}{'reqstats'}{'lastRated'}) {
+		push @orderby, 'maxlastrated desc';
+	}
+	push @orderby, 'random()';
+
+	$sql .= ' ORDER by ' . join(', ', @orderby);
+
 
 	# limit
 	my $listLimit = $prefs->get('listlimit') || 50;
@@ -1752,11 +1918,11 @@ sub getItemsForStats {
 					artistID => $artistID,
 					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName, 80), 'utf8'),
 					avgrating => round($avgRating),
-					totalrating => $totalRating,
+					totalrating => round($totalRating, 1),
 					avgplaycount => round($avgPC),
-					totalplaycount => $totalPC,
+					totalplaycount => round($totalPC, 0),
 					avgskipcount => round($avgSC),
-					totalskipcount => $totalSC,
+					totalskipcount => round($totalSC, 0),
 					dpsv => round($avgDPSV)
 				});
 			}
@@ -1770,11 +1936,11 @@ sub getItemsForStats {
 					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName, 80), 'utf8'),
 					artistimage => $artistImage,
 					avgrating => round($avgRating),
-					totalrating => $totalRating,
+					totalrating => round($totalRating, 1),
 					avgplaycount => round($avgPC),
-					totalplaycount => $totalPC,
+					totalplaycount => round($totalPC, 0),
 					avgskipcount => round($avgSC),
-					totalskipcount => $totalSC,
+					totalskipcount => round($totalSC, 0),
 					dpsv => round($avgDPSV)
 				});
 			}
@@ -1885,7 +2051,6 @@ sub getAppendedRatingText {
 	if ($rating100ScaleValue > 0) {
 		my $detecthalfstars = ($rating100ScaleValue/2)%2;
 		my $ratingstars = $rating100ScaleValue/20;
-		my $spacechar = ' ';
 
 		if ($detecthalfstars == 1) {
 			$ratingstars = floor($ratingstars);
@@ -1919,8 +2084,8 @@ sub trimStringLength {
 
 sub round {
 	my ($value, $decimals) = @_;
-	return 0 if !$value;
-	$decimals = 2 if !$decimals;
+	return 0 unless defined $value && $value != 0;
+	$decimals = 2 unless defined $decimals;
 	my $factor = 10**$decimals;
 	return int($value * $factor + 0.5) / $factor if $value >= 0;
 	return int($value * $factor - 0.5) / $factor if $value < 0;

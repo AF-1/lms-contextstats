@@ -451,3 +451,18 @@ PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH
 
 PLUGIN_CONTEXTSTATS_SETTINGS_JIVEXTRALINELENGTH_DESC
 	EN	Set the maximum character length of the line that displays rating, play count, skip count, dynamic played/skipped values for album and track lists.<br>Applies only to <b>jivelite</b> players and Material.<br><br>Skip count and DPSV require the <a href="https://github.com/AF-1/lms-alternativeplaycount" target="_blank" rel="noopener noreferrer"><i>Alternative Play Count</i></a> plugin.
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGCHANGEDPERIOD
+	EN	Rating changed period
+
+PLUGIN_CONTEXTSTATS_SETTINGS_RATINGCHANGEDPERIOD_DESC
+	EN	By default, <i>Rating Changed</i>, <i>Rating Raised</i> and <i>Rating Lowered</i> will list all matching tracks in descending order of the date last rated, only limited by the list limit.<br>With this setting you can limit the result to a specific period.
+
+PLUGIN_CONTEXTSTATS_RATINGCHANGED
+	EN	Rating Changed
+
+PLUGIN_CONTEXTSTATS_RATINGRAISED
+	EN	Rating Raised
+
+PLUGIN_CONTEXTSTATS_RATINGLOWERED
+	EN	Rating Lowered

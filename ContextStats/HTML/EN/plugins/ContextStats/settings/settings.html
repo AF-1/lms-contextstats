@@ -111,7 +111,25 @@
 			'29030399' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_12MONTHS',
 		} %]
 		[% FOREACH option IN myoptions.keys.nsort %]
-			<option [% IF prefs.recentlyplayedperiod == option %]selected='selected' [% END %]value="[% option %]">[% myoptions.$option | string %]</option>
+			<option [% IF prefs.recentlyaddedperiod == option %]selected='selected' [% END %]value="[% option %]">[% myoptions.$option | string %]</option>
+		[%- END -%]
+	</select>
+[% END %]
+<br>
+
+[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGCHANGEDPERIOD" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGCHANGEDPERIOD_DESC" %]
+	<select name="pref_ratingchangedperiod" id="ratingchangedperiod">
+		[% myoptions = {
+			'0' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_NOLIMIT',
+			'604800' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_1WEEK',
+			'1209600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_2WEEKS',
+			'2419200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_4WEEKS',
+			'7257600' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_3MONTHS',
+			'14515200' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_6MONTHS',
+			'29030399' => 'PLUGIN_CONTEXTSTATS_SETTINGS_SELECTRECENTLYPERIOD_12MONTHS',
+		} %]
+		[% FOREACH option IN myoptions.keys.nsort %]
+			<option [% IF prefs.ratingchangedperiod == option %]selected='selected' [% END %]value="[% option %]">[% myoptions.$option | string %]</option>
 		[%- END -%]
 	</select>
 [% END %]
