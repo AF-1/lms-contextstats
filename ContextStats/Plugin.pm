@@ -45,8 +45,8 @@ my $log = Slim::Utils::Log->addLogCategory({
 my $serverPrefs = preferences('server');
 my $prefs = preferences('plugin.contextstats');
 
-use constant CAN_LMS_ARTIST_ARTWORK => (Slim::Utils::Versions->compareVersions($::VERSION, '9.1.0') >= 0 && Slim::Music::Artwork->can('generateImageId')) ? 1 : 0;
 my ($listTypes, $apc_enabled, $ratingslightv3_enabled);
+my $can_lms_artist_artwork = 0;
 
 sub initPlugin {
 	my $class = shift;
@@ -78,6 +78,8 @@ sub initPlugin {
 
 sub postinitPlugin {
 	my $class = shift;
+	$can_lms_artist_artwork = (Slim::Utils::Versions->compareVersions($::VERSION, '9.1.0') >= 0 && Slim::Music::Artwork->can('generateImageId')) ? 1 : 0;
+	main::DEBUGLOG && $log->is_debug && $log->debug('can_lms_artist_artwork = '.$can_lms_artist_artwork);
 	$apc_enabled = Slim::Utils::PluginManager->isEnabled('Plugins::AlternativePlayCount::Plugin');
 	main::DEBUGLOG && $log->is_debug && $log->debug('Plugin "Alternative Play Count" is enabled') if $apc_enabled;
 
@@ -982,7 +984,7 @@ sub _statsListsMenuWeb {
 		$client->execute(['contextstats', 'plcontrolcmd', $action, $listType, 'ids:'.$actionTrackIDs]);
 	}
 
-	$params->{'noContributorPictures'} = 1 if $listType eq 'artists' && (!CAN_LMS_ARTIST_ARTWORK || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures')));
+	$params->{'noContributorPictures'} = 1 if $listType eq 'artists' && (!$can_lms_artist_artwork || ($can_lms_artist_artwork && $serverPrefs->get('noContributorPictures')));
 	$params->{'decade'} = (floor($params->{'objectid'}/10) * 10 + 0).'s' if ($params->{'context'} eq 'year');
 	$params->{'apcenabled'} = $apc_enabled;
 	$params->{'displayxtraline'} = $prefs->get('displayxtraline');
@@ -1068,7 +1070,6 @@ sub _jiveYearOrDecadeSel {
 
 		$request->addResult('offset', 0);
 		$request->addResult('count', 2);
-
 	} else {
 		$request->setStatusBadParams();
 	}
@@ -1180,8 +1181,8 @@ sub _jiveGetItems {
 					$suffix .= ' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT').': '.$thisItem->{'avgskipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT').': '.$thisItem->{'totalskipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV').': '.$thisItem->{'dpsv'} if $apc_enabled;
 					my $jiveExtraLineLength = $prefs->get('jiveextralinelength');
 					my $artistnameLength = (($jiveExtraLineLength - length($suffix) - 1) > 0) ? ($jiveExtraLineLength - length($suffix) - 1) : 0;
-					my $artistName = trimStringLength($thisItem->{'artistname'}, $artistnameLength).' '.$sepChar.' ';
-					$returntext .= $artistName unless length($artistName) < 8;
+					my $artistName = trimStringLength($thisItem->{'artistname'} // '', $artistnameLength) . ' ' . $sepChar . ' ';
+					$returntext .= $artistName if $thisItem->{'artistname'};
 					$returntext .= $suffix;
 
 					$actions = {
@@ -1195,8 +1196,8 @@ sub _jiveGetItems {
 				if ($listType eq 'artists') {
 					# id, artistname, artistimage, rating, playcount, skipcount, dpsv
 					my $artistImgUrl = 'plugins/ContextStats/html/images/artist.png';
-					$artistImgUrl = $thisItem->{'artistimage'}.'/image_100x100_o' if (CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures') && $thisItem->{'artistimage'});
-					if ((CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures')) || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures') && !$materialCaller) || (!CAN_LMS_ARTIST_ARTWORK && !$materialCaller)) {
+					$artistImgUrl = $thisItem->{'artistimage'}.'/image_100x100_o' if ($can_lms_artist_artwork && !$serverPrefs->get('noContributorPictures') && $thisItem->{'artistimage'});
+					if (($can_lms_artist_artwork && !$serverPrefs->get('noContributorPictures')) || ($can_lms_artist_artwork && $serverPrefs->get('noContributorPictures') && !$materialCaller) || (!$can_lms_artist_artwork && !$materialCaller)) {
 						$request->addResultLoop('item_loop', $cnt, 'icon', $artistImgUrl);
 					}
 
@@ -1225,8 +1226,8 @@ sub _jiveGetItems {
 					$suffix .= ' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT').': '.$thisItem->{'skipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV').': '.$thisItem->{'dpsv'} if $apc_enabled;
 					my $jiveExtraLineLength = $prefs->get('jiveextralinelength');
 					my $artistnameLength = (($jiveExtraLineLength - length($suffix)) > 0) ? ($jiveExtraLineLength - length($suffix)) : 0;
-					my $artistName = trimStringLength($thisItem->{'artistname'}, $artistnameLength).' '.$sepChar.' ';
-					$returntext .= $artistName unless length($artistName) < 8;
+					my $artistName = trimStringLength($thisItem->{'artistname'} // '', $artistnameLength) . ' ' . $sepChar . ' ';
+					$returntext .= $artistName if $thisItem->{'artistname'};
 					$returntext .= $suffix;
 
 					$actions = {
@@ -1242,10 +1243,6 @@ sub _jiveGetItems {
 				$request->addResultLoop('item_loop', $cnt, 'text', $returntext);
 				$cnt++;
 			}
-			my %menuStyle = ();
-			$menuStyle{'titleStyle'} = 'mymusic';
-			$menuStyle{'menuStyle'} = 'album';
-			$menuStyle{'windowStyle'} = 'icon_list';
 
 			if ($itemCount > 1) {
 				my $listallitemids = join (',', @allItemIDs);
@@ -1262,25 +1259,22 @@ sub _jiveGetItems {
 				$request->addResultLoop('item_loop', 0, 'type', 'redirect');
 				$request->addResultLoop('item_loop', 0, 'actions', $actions);
 				unless ($listType eq 'artists' && $materialCaller &&
-				(!CAN_LMS_ARTIST_ARTWORK || (CAN_LMS_ARTIST_ARTWORK && $serverPrefs->get('noContributorPictures')))) {
+				(!$can_lms_artist_artwork || ($can_lms_artist_artwork && $serverPrefs->get('noContributorPictures')))) {
 					$request->addResultLoop('item_loop', 0, 'icon', 'plugins/ContextStats/html/images/allsongs_svg.png');
 				}
 				$request->addResultLoop('item_loop', 0, 'text', $returnText.' ('.$itemCount.')');
 				$cnt++;
 			}
-			$request->addResult('window',\%menuStyle);
+			$request->addResult('window', {menustyle => 'album', titleStyle => 'mymusic', windowStyle => 'icon_list'});
 			$request->addResult('offset', 0);
 			$request->addResult('count', $cnt);
 
 		} else {
-			$request->addResult('window', {
-				'menustyle' => 'album',
-				'titleStyle' => 'mymusic',
-			});
 			$request->addResultLoop('item_loop', 0, 'type', 'redirect');
 			$request->addResultLoop('item_loop', 0, 'text', string('PLUGIN_CONTEXTSTATS_LISTITEMS_NOITEMSFOUND'));
 			$request->addResultLoop('item_loop', 0, 'style', 'itemNoAction');
 			$request->addResultLoop('item_loop', 0, 'action', 'none');
+			$request->addResult('window', {menustyle => 'album', titleStyle => 'mymusic'});
 			$request->addResult('offset', 0);
 			$request->addResult('count', 1);
 		}
@@ -1326,12 +1320,12 @@ sub _jiveActionsMenu {
 	my $cnt = 0;
 	foreach my $menuitem (@{$actionsmenuitems}) {
 		my $actions = {
-				'player' => 0,
 				'go' => {
+					'player' => 0,
 					'cmd' => ['contextstats', 'plcontrolcmd', $menuitem->{'itemcmd'}, $listType, 'ids:'.$ids],
 				},
-				'player' => 0,
 				'play' => {
+					'player' => 0,
 					'cmd' => ['contextstats', 'plcontrolcmd', $menuitem->{'itemcmd'}, $listType, 'ids:'.$ids],
 				}
 		};
@@ -1356,13 +1350,13 @@ sub _jiveActionsMenu {
 			$params->{'mode'} = $listType eq 'albums' ? 'tracks' : 'albums';
 			my $returntext = $listType eq 'albums' ? string('PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_BROWSEALBUM') : string('PLUGIN_CONTEXTSTATS_JIVEACTIONMENU_BROWSEARTIST');
 			my $actions = {
-				'player' => 0,
 				'go' => {
+					'player' => 0,
 					'cmd' => ['browselibrary', 'items'],
 					'params' => $params,
 				},
-				'player' => 0,
 				'play' => {
+					'player' => 0,
 					'cmd' => [$cmd, 'items'],
 					'params' => $params,
 				}
@@ -1372,22 +1366,22 @@ sub _jiveActionsMenu {
 			$cnt++;
 		}
 
-		my $thisitem->{'actionParam'} = $id_prefix.'_id';
+		my $actionParam = $id_prefix.'_id';
 		my $actions = {
-			'player' => 0,
 			'go' => {
+				'player' => 0,
 				'cmd' => [$cmd, 'items'],
 				'params' => {
 					'menu' => 1,
-					$thisitem->{'actionParam'} => $ids,
+					$actionParam => $ids,
 				},
 			},
-			'player' => 0,
 			'play' => {
+				'player' => 0,
 				'cmd' => [$cmd, 'items'],
 				'params' => {
 					'menu' => 1,
-					$thisitem->{'actionParam'} => $ids,
+					$actionParam => $ids,
 				},
 			}
 		};
@@ -1551,7 +1545,7 @@ sub getItemsForStats {
 		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as maxlastrated" if $ratingslightv3_enabled;
 		$sql .= " from tracks";
 		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
-		$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role == 5 join contributors on contributor_album.contributor = contributors.id";
+		$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role = 5 join contributors on contributor_album.contributor = contributors.id";
 		$sql .= " and contributor_album.contributor = $objectid" if $context eq 'artist';
 		$sql .= " join albums on tracks.album = albums.id";
 		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
@@ -1562,7 +1556,7 @@ sub getItemsForStats {
 	} elsif ($listType eq 'artists') {
 		# outer select - aggregates over the deduplicated inner result set
 		$sql .= " t.contributor, contributors.name";
-		if (CAN_LMS_ARTIST_ARTWORK) {
+		if ($can_lms_artist_artwork) {
 			$sql .= ", contributors.portraitid";
 		} else {
 			$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
@@ -1912,11 +1906,11 @@ sub getItemsForStats {
 				my $albumYear = $prefs->get('showyear') ? $albumYear : 0;
 				push (@matchingItems, {
 					id => $albumID,
-					albumtitle => Slim::Utils::Unicode::utf8decode(trimStringLength($albumTitle, 80), 'utf8'),
+					albumtitle => Slim::Utils::Unicode::utf8decode(trimStringLength($albumTitle // '', 80), 'utf8'),
 					year => $albumYear,
 					artworkid => $albumArtwork,
 					artistID => $artistID,
-					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName, 80), 'utf8'),
+					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName // '', 80), 'utf8'),
 					avgrating => round($avgRating),
 					totalrating => round($totalRating, 1),
 					avgplaycount => round($avgPC),
@@ -1928,12 +1922,12 @@ sub getItemsForStats {
 			}
 			if ($listType eq 'artists') {
 				my $artistImage;
-				if (CAN_LMS_ARTIST_ARTWORK && !$serverPrefs->get('noContributorPictures')) {
+				if ($can_lms_artist_artwork && !$serverPrefs->get('noContributorPictures')) {
 					$artistImage = 'contributor/' . ($artistPortraitID || 0);
 				}
 				push (@matchingItems, {
 					id => $artistID,
-					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName, 80), 'utf8'),
+					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName // '', 80), 'utf8'),
 					artistimage => $artistImage,
 					avgrating => round($avgRating),
 					totalrating => round($totalRating, 1),
@@ -1957,10 +1951,10 @@ sub getItemsForStats {
 					tracktitle => $trackTitle,
 					year => $trackYear,
 					albumID => $albumID,
-					albumtitle => Slim::Utils::Unicode::utf8decode(trimStringLength($albumTitle, 80), 'utf8'),
+					albumtitle => Slim::Utils::Unicode::utf8decode(trimStringLength($albumTitle // '', 80), 'utf8'),
 					artworkid => $albumArtwork,
 					artistID => $artistID,
-					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName, 80), 'utf8'),
+					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName // '', 80), 'utf8'),
 					rating => $trackRating,
 					playcount => $trackPC,
 					skipcount => $trackSC,
@@ -1998,26 +1992,32 @@ sub _multipleIdsPLcontrol {
 	my $ids = _getRequestParamVal($request, 'ids');
 
 	my @allIDs = split(/,/, $ids);
-	chop($listType);
+	my %listTypeSingular = (tracks => 'track', albums => 'album', artists => 'artist');
+	my $listTypeSingularStr = $listTypeSingular{$listType};
+	if (!defined $listTypeSingularStr) {
+		$log->warn("_multipleIdsPLcontrol: unknown listtype '$listType'");
+		$request->setStatusBadParams();
+		return;
+	}
 
 	if ($command eq 'insert') {
-		if ($listType eq 'tracks') {
-			$client->execute(['playlistcontrol', 'cmd:'.$command, $listType.'_id:'.$ids]);
+		if ($listTypeSingularStr eq 'track') {
+			$client->execute(['playlistcontrol', 'cmd:'.$command, $listTypeSingularStr.'_id:'.$ids]);
 		} else {
 			while (my $thisid = pop @allIDs) {
-				$client->execute(['playlistcontrol', 'cmd:'.$command, $listType.'_id:'.$thisid]);
+				$client->execute(['playlistcontrol', 'cmd:'.$command, $listTypeSingularStr.'_id:'.$thisid]);
 			}
 		}
 	}
 	if ($command eq 'add') {
 		foreach (@allIDs) {
-			$client->execute(['playlistcontrol', 'cmd:'.$command, $listType.'_id:'.$_]);
+			$client->execute(['playlistcontrol', 'cmd:'.$command, $listTypeSingularStr.'_id:'.$_]);
 		}
 	}
 	if ($command eq 'load') {
-		$client->execute(['playlistcontrol', 'cmd:load', $listType.'_id:'.(shift @allIDs)]);
+		$client->execute(['playlistcontrol', 'cmd:load', $listTypeSingularStr.'_id:'.(shift @allIDs)]);
 		foreach (@allIDs) {
-			$client->execute(['playlistcontrol', 'cmd:add', $listType.'_id:'.$_]);
+			$client->execute(['playlistcontrol', 'cmd:add', $listTypeSingularStr.'_id:'.$_]);
 		}
 	}
 
@@ -2042,6 +2042,7 @@ sub _getRequestParamVal {
 
 sub getAppendedRatingText {
 	my $rating100ScaleValue = shift;
+	return '' unless defined $rating100ScaleValue;
 	my $nobreakspace = HTML::Entities::decode_entities('&#xa0;'); # "NO-BREAK SPACE" - HTML Entity (hex): &#xa0;
 	my $displayratingchar = $prefs->get('displayratingchar'); # 0 = common text star *, 1 = "blackstar" - HTML Entity (hex): &#x2605
 	my $ratingchar = $displayratingchar ? HTML::Entities::decode_entities('&#x2605;') : ' *';
