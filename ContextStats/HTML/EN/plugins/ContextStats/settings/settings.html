@@ -40,14 +40,6 @@
 [% END %]
 <br>
 
-[% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE" desc="PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE_DESC" %]
-	<select class="stdedit" name="pref_usefivestarscale" id="usefivestarscale">
-		<option [% IF NOT prefs.usefivestarscale %]selected [% END %]value="0">[% 'NO' | getstring %]</option>
-		<option [% IF prefs.usefivestarscale %]selected [% END %]value="1">[% 'YES' | getstring %]</option>
-	</select>
-[% END %]
-<br>
-
 [% WRAPPER setting title="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER" desc="PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_DESC" %]
 	<select name="pref_displayratingchar" id="displayratingchar">
 		[% FOREACH option = {

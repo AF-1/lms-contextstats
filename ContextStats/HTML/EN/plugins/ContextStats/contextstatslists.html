@@ -324,7 +324,7 @@
 					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
 					[% IF displayxtraline %]
 					<br>
-					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT" | string %]: [% item.rating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]
+					<span class="thirdline">[% IF item.lastrated %][% "PLUGIN_CONTEXTSTATS_LISTITEMS_PREVRATING_SHORT" | string %]: [% item.prevrating %] &#x2022; [% END %][% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]
 					[% END %]
 					[% END %]
 				</span>

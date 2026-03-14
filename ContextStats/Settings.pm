@@ -41,7 +41,7 @@ sub page {
 }
 
 sub prefs {
-	return ($prefs, qw(listlimit useapcvalues browsemenuitem displayxtraline jiveextralinelength min_album_tracks topratedminrating usefivestarscale displayratingchar showyear recentlyplayedperiod recentlyaddedperiod ratingchangedperiod contextmenuposition));
+	return ($prefs, qw(listlimit useapcvalues browsemenuitem displayxtraline jiveextralinelength min_album_tracks topratedminrating displayratingchar showyear recentlyplayedperiod recentlyaddedperiod ratingchangedperiod contextmenuposition));
 }
 
 sub handler {

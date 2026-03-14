@@ -103,7 +103,6 @@ sub initPrefs {
 		showyear => 1,
 		displayxtraline => 1,
 		jiveextralinelength => 82,
-		usefivestarscale => 1,
 		topratedminrating => 60,
 		ratingchangedperiod => 0
 	});
@@ -1222,7 +1221,9 @@ sub _jiveGetItems {
 					# id, tracktitle, year, albumID, albumtitle, artworkid, artistID, artistname, rating, playcount, skipcount, dpsv
 
 					$returntext = $thisItem->{'tracktitle'}."\n";
-					my $suffix = string('PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT').': '.$thisItem->{'rating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT').': '.$thisItem->{'playcount'};
+					my $isPrevRatingList = $ratingslightv3_enabled && ($selectedListID eq 'RatingChanged' || $selectedListID eq 'RatingRaised' || $selectedListID eq 'RatingLowered');
+					my $prevRatingStr = ($isPrevRatingList && $thisItem->{'lastrated'}) ? string('PLUGIN_CONTEXTSTATS_LISTITEMS_PREVRATING_SHORT').': '.$thisItem->{'prevrating'}.' '.$sepChar.' ' : '';
+					my $suffix = $prevRatingStr.string('PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT').': '.$thisItem->{'playcount'};
 					$suffix .= ' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT').': '.$thisItem->{'skipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV').': '.$thisItem->{'dpsv'} if $apc_enabled;
 					my $jiveExtraLineLength = $prefs->get('jiveextralinelength');
 					my $artistnameLength = (($jiveExtraLineLength - length($suffix)) > 0) ? ($jiveExtraLineLength - length($suffix)) : 0;
@@ -1507,7 +1508,7 @@ sub getListsForContext {
 sub getItemsForStats {
 	my ($client, $jive, $context, $listType, $objectid, $selectedlistid, $useDecade) = @_;
 
-	#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval'
+	#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval', 'prevRating', 'lastRated'
 	my $table = ($apc_enabled && $prefs->get('useapcvalues')) ? 'alternativeplaycount' : 'tracks_persistent';
 	my $activeClientLibrary = Slim::Music::VirtualLibraries->getLibraryIdForClient($client);
 	my $topratedMinRating = $prefs->get('topratedminrating');
@@ -1515,6 +1516,7 @@ sub getItemsForStats {
 	my $recentlyAddedPeriod = $prefs->get('recentlyaddedperiod');
 	my $ratingChangedPeriod = $prefs->get('ratingchangedperiod');
 	my $VAid = Slim::Schema->variousArtistsObject->id;
+	my $VAstring = $serverPrefs->get('variousArtistsString') || 'Various Artists';
 
 	#### build sql query ####
 	# For albums and tracks, the query is built in a single pass.
@@ -1526,12 +1528,8 @@ sub getItemsForStats {
 	my $sql = "SELECT";
 	if ($listType eq 'albums') {
 		$sql .= " albums.id, albums.title, albums.year, albums.artwork, contributor_album.contributor, contributors.name";
-		$sql .= ", avg(ifnull(tracks_persistent.rating,0))";
-		$sql .= "/20" if $prefs->get('usefivestarscale');
-		$sql .= " as avgrating";
-		$sql .= ", sum(ifnull(tracks_persistent.rating,0))";
-		$sql .= "/20" if $prefs->get('usefivestarscale');
-		$sql .= " as totalrating";
+		$sql .= ", avg(ifnull(tracks_persistent.rating,0))/20 as avgrating";
+		$sql .= ", sum(ifnull(tracks_persistent.rating,0))/20 as totalrating";
 		$sql .= ", avg(ifnull($table.playCount,0)) as avgplaycount";
 		$sql .= ", sum(ifnull($table.playCount,0)) as totalplaycount";
 		if ($apc_enabled) {
@@ -1539,11 +1537,15 @@ sub getItemsForStats {
 			$sql .= ", sum(ifnull(alternativeplaycount.skipCount,0)) as totalskipcount";
 			$sql .= ", avg(ifnull(alternativeplaycount.dynPSval,0)) as avgDPSV";
 		}
-		$sql .= ", max($table.lastPlayed) as maxlastplayed";
+		# bound columns end here
+
+		# below unbound columns (used internally for filtering/ordering only)
 		$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as maxlastskipped" if $apc_enabled;
-		$sql .= ", max(tracks_persistent.added) as maxadded";
 		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as maxlastrated" if $ratingslightv3_enabled;
-		$sql .= " from tracks";
+		$sql .= ", max($table.lastPlayed) as maxlastplayed";
+		$sql .= ", max(tracks_persistent.added) as maxadded";
+		$sql .= " FROM tracks";
+
 		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
 		$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role = 5 join contributors on contributor_album.contributor = contributors.id";
 		$sql .= " and contributor_album.contributor = $objectid" if $context eq 'artist';
@@ -1553,6 +1555,7 @@ sub getItemsForStats {
 		$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
 		$sql .= " join playlist_track on tracks.url = playlist_track.track and playlist_track.playlist = $objectid" if $context eq 'playlist';
 		$sql .= " WHERE tracks.audio = 1";
+
 	} elsif ($listType eq 'artists') {
 		# outer select - aggregates over the deduplicated inner result set
 		$sql .= " t.contributor, contributors.name";
@@ -1561,12 +1564,8 @@ sub getItemsForStats {
 		} else {
 			$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
 		}
-		$sql .= ", avg(t.rating)";
-		$sql .= "/20" if $prefs->get('usefivestarscale');
-		$sql .= " as avgrating";
-		$sql .= ", sum(t.rating)";
-		$sql .= "/20" if $prefs->get('usefivestarscale');
-		$sql .= " as totalrating";
+		$sql .= ", avg(t.rating)/20 as avgrating";
+		$sql .= ", sum(t.rating)/20 as totalrating";
 		$sql .= ", avg(t.playCount) as avgplaycount";
 		$sql .= ", sum(t.playCount) as totalplaycount";
 		if ($apc_enabled) {
@@ -1574,10 +1573,14 @@ sub getItemsForStats {
 			$sql .= ", sum(t.skipCount) as totalskipcount";
 			$sql .= ", avg(t.dynPSval) as avgDPSV";
 		}
+		# bound columns end here
+
+		# below unbound columns (used internally for filtering/ordering only)
+		$sql .= ", max(t.lastSkipped) as maxlastskipped";
 		$sql .= ", max(t.lastPlayed) as maxlastplayed";
-		$sql .= ", max(t.lastSkipped) as maxlastskipped" if $apc_enabled;
 		$sql .= ", max(t.added) as maxadded";
 		$sql .= ", max(t.lastRated) as maxlastrated" if $ratingslightv3_enabled;
+
 		# inner subquery: produces exactly one row per (track, artist contributor)
 		$sql .= " FROM (SELECT tracks.id, tracks.year, contributor_track.contributor";
 		$sql .= ", ifnull(tracks_persistent.rating,0) as rating";
@@ -1591,8 +1594,9 @@ sub getItemsForStats {
 		$sql .= ", max(ifnull(tracks_persistent.added,0)) as added";
 		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as lastRated" if $ratingslightv3_enabled;
 		$sql .= " FROM tracks";
+
 		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
-		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,4,5,6)";
+		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,5,6)";
 		$sql .= " and contributor_track.contributor = $objectid" if $context eq 'artist';
 		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
 		$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
@@ -1602,20 +1606,30 @@ sub getItemsForStats {
 		$sql .= " GROUP BY tracks.id, contributor_track.contributor) t";
 		$sql .= " join contributors on t.contributor = contributors.id";
 		$sql .= " WHERE 1=1";
+
 	} elsif ($listType eq 'tracks') {
 		$sql .= " tracks.id, tracks.title, tracks.year, albums.id, albums.title, albums.artwork, contributor_track.contributor, contributors.name";
-		$sql .= ", ifnull(tracks_persistent.rating,0)";
-		$sql .= " as trackrating";
+		$sql .= ", ifnull(tracks_persistent.rating,0) as trackrating";
 		$sql .= ", ifnull($table.playCount,0) as trackpc";
-		$sql .= ", ifnull(alternativeplaycount.skipCount,0) as trackskipcount" if $apc_enabled;
-		$sql .= ", ifnull(alternativeplaycount.dynPSval,0) as trackDPSV" if $apc_enabled;
-		$sql .= ", max($table.lastPlayed) as maxlastplayed";
+		if ($apc_enabled) {
+			$sql .= ", ifnull(alternativeplaycount.skipCount,0) as trackskipcount";
+			$sql .= ", ifnull(alternativeplaycount.dynPSval,0) as trackDPSV";
+		}
+		if ($ratingslightv3_enabled && ($selectedlistid eq 'RatingChanged' || $selectedlistid eq 'RatingRaised' || $selectedlistid eq 'RatingLowered')) {
+			$sql .= ", ifnull(tracks_persistent.prevRating,0) as trackprevrating";
+			$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as tracklastrated";
+		}
+		# bound columns end here
+
+		# below unbound columns (used internally for filtering/ordering only)
 		$sql .= ", max(ifnull(alternativeplaycount.lastSkipped,0)) as maxlastskipped" if $apc_enabled;
+		$sql .= ", max($table.lastPlayed) as maxlastplayed";
 		$sql .= ", max(tracks_persistent.added) as maxadded";
 		$sql .= ", max(ifnull(tracks_persistent.lastRated,0)) as maxlastrated" if $ratingslightv3_enabled;
-		$sql .= " from tracks";
+		$sql .= " FROM tracks";
+
 		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
-		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,4,5,6) join contributors on contributor_track.contributor = contributors.id";
+		$sql .= " join contributor_track on tracks.id = contributor_track.track and contributor_track.role in (1,5,6) join contributors on contributor_track.contributor = contributors.id";
 		$sql .= " and contributor_track.contributor = $objectid" if $context eq 'artist';
 		$sql .= " join albums on tracks.album = albums.id";
 		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
@@ -1712,16 +1726,12 @@ sub getItemsForStats {
 		}
 		if ($selectedlistid =~ /SpecificRating\d+/) {
 			my ($rating) = $selectedlistid =~ /SpecificRating(\d+)/;
-			if ($prefs->get('usefivestarscale')) {
-				my $ratingLow = ($rating - 5) / 20;
-				my $ratingHigh = ($rating + 4) / 20;
-				$sql .= " and avgrating >= $ratingLow and avgrating <= $ratingHigh";
-			} else {
-				$sql .= " and avgrating >= ($rating - 5) and avgrating <= ($rating + 4)";
-			}
+			my $ratingLow = ($rating - 5) / 20;
+			my $ratingHigh = ($rating + 4) / 20;
+			$sql .= " and avgrating >= $ratingLow and avgrating <= $ratingHigh";
 		}
 		if ($selectedlistid =~ /TopRated/) {
-			my $topratedThreshold = $prefs->get('usefivestarscale') ? $topratedMinRating / 20 : $topratedMinRating;
+			my $topratedThreshold = $topratedMinRating / 20;
 			$sql .= " and avgrating >= $topratedThreshold";
 		}
 		if ($selectedlistid =~ /NotRated/) {
@@ -1853,13 +1863,14 @@ sub getItemsForStats {
 	#### get items ####
 	my @matchingItems = ();
 	my $dbh = Slim::Schema->dbh;
+	my $sth_artist = $dbh->prepare_cached('SELECT contributors.name, contributors.id FROM contributor_track JOIN contributors ON contributor_track.contributor = contributors.id WHERE contributor_track.track = ? AND contributor_track.role = ? LIMIT 1');
 
 	eval {
 		my $sth = $dbh->prepare($sql);
 		$sth->execute() or do {$sql = undef;};
 
 		my ($trackID, $trackTitle, $trackYear, $albumID, $albumTitle, $albumYear, $albumArtwork, $artistID, $artistName, $artistPortraitID);
-		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV);
+		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV, $trackPrevRating, $trackLastRated);
 
 		if ($listType eq 'albums') {
 			$sth->bind_col(1,\$albumID);
@@ -1899,9 +1910,27 @@ sub getItemsForStats {
 			$sth->bind_col(10,\$trackPC);
 			$sth->bind_col(11,\$trackSC) if $apc_enabled;
 			$sth->bind_col(12,\$trackDPSV) if $apc_enabled;
+			if ($ratingslightv3_enabled && ($selectedlistid eq 'RatingChanged' || $selectedlistid eq 'RatingRaised' || $selectedlistid eq 'RatingLowered')) {
+				my $prevratingcol = $apc_enabled ? 13 : 11;
+				$sth->bind_col($prevratingcol, \$trackPrevRating);
+				$sth->bind_col($prevratingcol + 1, \$trackLastRated);
+			}
 		}
 
 		while ($sth->fetch()) {
+			if ($listType eq 'tracks' && ($artistID == $VAid || $artistName eq $VAstring)) {
+				for my $role (1, 6, 5) {
+					my ($n, $i);
+					eval {
+						$sth_artist->execute($trackID, $role);
+						($n, $i) = $sth_artist->fetchrow_array();
+						$sth_artist->finish();
+					};
+					if ($@) { $log->error("SQL error: $@ DBI: $DBI::errstr"); }
+					if ($n && $n ne '') { $artistName = $n; $artistID = $i; last; }
+				}
+			}
+
 			if ($listType eq 'albums') {
 				my $albumYear = $prefs->get('showyear') ? $albumYear : 0;
 				push (@matchingItems, {
@@ -1938,13 +1967,11 @@ sub getItemsForStats {
 					dpsv => round($avgDPSV)
 				});
 			}
-
 			if ($listType eq 'tracks') {
 				my $trackYear = $prefs->get('showyear') ? $trackYear : 0;
 				my $ratingtext = ($trackRating > 4) ? getAppendedRatingText($trackRating, 'appended') : '';
-				$trackTitle = trimStringLength(Slim::Utils::Unicode::utf8decode($trackTitle, 'utf8'), ($jive ? 60 : 70)).$ratingtext;
+				$trackTitle = trimStringLength(Slim::Utils::Unicode::utf8decode($trackTitle, 'utf8'), ($jive ? 60 : 70) - length($ratingtext)).$ratingtext;
 				main::DEBUGLOG && $log->is_debug && $log->debug(Slim::Utils::Unicode::encodingFromString($trackTitle).": ".$trackTitle);
-				$trackRating = round($trackRating/20) if $prefs->get('usefivestarscale');
 
 				push (@matchingItems, {
 					id => $trackID,
@@ -1955,13 +1982,14 @@ sub getItemsForStats {
 					artworkid => $albumArtwork,
 					artistID => $artistID,
 					artistname => Slim::Utils::Unicode::utf8decode(trimStringLength($artistName // '', 80), 'utf8'),
-					rating => $trackRating,
+					rating => formatRatingForDisplay($trackRating),
 					playcount => $trackPC,
 					skipcount => $trackSC,
-					dpsv => $trackDPSV
+					dpsv => $trackDPSV,
+					prevrating => formatRatingForDisplay($trackPrevRating),
+					lastrated => $trackLastRated
 				});
 			}
-
 		}
 		$sth->finish();
 	};
@@ -2090,6 +2118,16 @@ sub round {
 	my $factor = 10**$decimals;
 	return int($value * $factor + 0.5) / $factor if $value >= 0;
 	return int($value * $factor - 0.5) / $factor if $value < 0;
+}
+
+sub formatRatingForDisplay {
+	my $rating100 = shift;
+	return 0 unless defined $rating100 && $rating100 > 0;
+	# Round to nearest half star
+	my $rounded100 = int(($rating100 + 5) / 10) * 10;
+	$rounded100 = 100 if $rounded100 > 100;
+	my $starsVal = $rounded100 / 20;
+	return "$starsVal";
 }
 
 sub weight {

@@ -268,6 +268,9 @@ PLUGIN_CONTEXTSTATS_LISTITEMS_RATING
 PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT
 	EN	R
 
+PLUGIN_CONTEXTSTATS_LISTITEMS_PREVRATING_SHORT
+	EN	Prev.R
+
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING
 	EN	Avg. Rating
 
@@ -367,12 +370,6 @@ PLUGIN_CONTEXTSTATS_SETTINGS_STARS
 
 PLUGIN_CONTEXTSTATS_SETTINGS_TOPMINRATING_DESC
 	EN	You can set the minimum rating used to sort items by <i>top min. rating</i>. Only tracks, albums and artists with this rating value and higher will be considered.
-
-PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE
-	EN	Use five star rating scale
-
-PLUGIN_CONTEXTSTATS_SETTINGS_USEFIVESTARSCALE_DESC
-	EN	Use the common five star rating scale for total and average ratings displayed below the artist name, album or track title (instead of the LMS 100 rating scale).
 
 PLUGIN_CONTEXTSTATS_SETTINGS_RECENTLYPLAYEDPERIOD
 	EN	Recently played period
