@@ -9,7 +9,7 @@
 	align-items : center;
 	justify-content : flex-start;
 [% IF listtype == 'artists' && noContributorPictures %]
-	padding: 5 0 5 0;
+	padding: 5px 0;
 [% END %]
 }
 .cover {
@@ -21,7 +21,7 @@
 [% UNLESS listtype == 'artists' && noContributorPictures %]
 	padding-left: 20px;
 [% END %]
-	vertical-align: center;
+	vertical-align: middle;
 }
 .firstline {
 	font-size: [% IF systemSkin != 'Classic' %]12[% ELSE %]11[% END %]px;
@@ -32,7 +32,8 @@
 	font-size: [% IF systemSkin != 'Classic' %]11[% ELSE %]10[% END %]px;
 }
 .thirdline {
-	margin-top: 4px;
+	display: block;
+	margin-top: 3px;
 	font-size: [% IF systemSkin != 'Classic' %]10[% ELSE %]9[% END %]px;
 }
 
@@ -62,7 +63,6 @@
 }
 .circular-loader-rotate {
 	visibility: visible;
-	-webkit-animation: rotate 2s linear infinite;
 			animation: rotate 2s linear infinite;
 	-webkit-transform-origin: center center;
 		-ms-transform-origin: center center;
@@ -144,7 +144,7 @@
 			//console.log('useDecade = '+usedecade);
 			[%- END %]
 			let timestamp = Date.now();
-			let thisurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html/?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+[% IF context == 'year' %]"&usedecade="+usedecade+[% END %]"&player=[% playerURI %]&v="+timestamp;
+			let thisurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+[% IF context == 'year' %]"&usedecade="+usedecade+[% END %]"&player=[% playerURI %]&v="+timestamp;
 			//console.log('this url = '+thisurl);
 			document.getElementById("infocircle").classList.add("loader-path");
 			document.getElementById("circularloader").classList.add("circular-loader-rotate");
@@ -155,7 +155,7 @@
 		function refreshYear (usedecade) {
 			let selectedlistid = document.querySelector('#statsselect').value;
 			//console.dir('selectedlistid = '+selectedlistid);
-			let yearurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html/?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+"&usedecade="+usedecade+"&player=[% playerURI %]";
+			let yearurl = "[% webroot %]plugins/ContextStats/contextstatsmenu.html?context=[% context %]&listtype=[% listtype %]&objectid=[% objectid %]&objectname="+encodeURIComponent('[% objectname %]')+"&selectedlistid="+selectedlistid+"&usedecade="+usedecade+"&player=[% playerURI %]";
 			//console.log('yearurl = '+yearurl);
 			document.getElementById("infocircle").classList.add("loader-path");
 			document.getElementById("circularloader").classList.add("circular-loader-rotate");
@@ -303,7 +303,7 @@
 					<a class="firstline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.id %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
 					<br>
 					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.artistID %]&player=[% playerURI %]&linktitle=[% stringARTIST %]%20([% item.artistname | uri %])/">[% item.artistname %]</a>
-					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
+					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %]</a>)[% END %]
 					[% IF displayxtraline %]
 					<br>
 					<span class="thirdline">[% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT" | string %]: [% item.avgrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT" | string %]: [% item.totalrating %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT" | string %]: [% item.avgplaycount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT" | string %]: [% item.totalplaycount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT" | string %]: [% item.avgskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT" | string %]: [% item.totalskipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV" | string %]: [% item.dpsv %][% END %]
@@ -321,7 +321,7 @@
 					<br>
 					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&artist_id=[% item.artistID %]&player=[% playerURI %]&linktitle=[% stringARTIST %]%20([% item.artistname | uri %])/">[% item.artistname %]</a> &#x2022;
 					<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=tracks&album_id=[% item.albumID %]&linktitle=[% stringALBUM %]%20([% item.albumtitle | uri %])&player=[% playerURI %]/">[% item.albumtitle %]</a>
-					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %])</a>[% END %]
+					[% IF item.year %] &nbsp;(<a class="secondline underline-on-hover" href="[% webroot %]clixmlbrowser/clicmd=browselibrary+items&mode=albums&year=[% item.year %]&player=[% playerURI %]&linktitle=[% stringYEAR %]%20([% item.year | uri %])/">[% item.year %]</a>)[% END %]
 					[% IF displayxtraline %]
 					<br>
 					<span class="thirdline">[% IF item.lastrated %][% "PLUGIN_CONTEXTSTATS_LISTITEMS_PREVRATING_SHORT" | string %]: [% item.prevrating %] &#x2022; [% END %][% "PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT" | string %]: [% item.playcount %][% IF apcenabled %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT" | string %]: [% item.skipcount %] &#x2022; [% "PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV" | string %]: [% item.dpsv %][% END %]

@@ -8,7 +8,7 @@
 </style>
 [%- pagetitle = 'PLUGIN_CONTEXTSTATS' | string -%]
 [%- pwd_list = BLOCK -%]/
-	[% 'PLUGIN_CONTEXTSTATS' | string %] [% IF systemSkin == 'Classic' %]/[% ELSE %]>[% END %] 
+	[% 'PLUGIN_CONTEXTSTATS' | string %] [% IF systemSkin == 'Classic' %]/[% ELSE %]>[% END %]
 	<span class="ucfirst">[% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</span>
 [% END -%]
 [% PROCESS pageheader.html %]
@@ -17,7 +17,7 @@
 	[% odd = 1 %]
 		[%- FOREACH item IN lists.keys.nsort %]
 		[%- WRAPPER contentitem %]
-			<a class="underline-on-hover" href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?context=all&amp;listtype=[% lists.$item.type %]&amp;player=[% playerURI %]" [% IF browserTarget %]target="[% browserTarget %]"[% END %]">[% lists.$item.name %] [% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</a>
+			<a class="underline-on-hover" href="[% webroot %]plugins/ContextStats/contextstatsmenu.html?context=all&amp;listtype=[% lists.$item.type %]&amp;player=[% playerURI %]" [% IF browserTarget %]target="[% browserTarget %]"[% END %]>[% lists.$item.name %] [% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]</a>
 			[% IF systemSkin != 'Classic' %]<br><br>[% END %]
 		[% END %]
 		[% odd = (not odd) %]

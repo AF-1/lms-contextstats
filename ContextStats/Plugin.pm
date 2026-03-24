@@ -1,21 +1,7 @@
 #
 # Context Stats
-#
 # (c) 2024 AF
-#
-# GPLv3 license
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
+# Licensed under the GPLv3 - see LICENSE file
 #
 
 package Plugins::ContextStats::Plugin;
@@ -106,14 +92,14 @@ sub initPrefs {
 		topratedminrating => 60,
 		ratingchangedperiod => 0
 	});
-	$prefs->set('topratedminrating', 60) if !$prefs->get('topratedminrating'); # remove in future release
 
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 1, 'high' => 100}, 'min_album_tracks');
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 5, 'high' => 500}, 'listlimit');
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 65, 'high' => 150}, 'jiveextralinelength');
 
 	$prefs->setChange(sub {
-		my $pos = ($prefs->get('contextmenuposition') && $prefs->get('contextmenuposition') == 1) ? 'aaa' : 'zzz';
+		my $cmpos = $prefs->get('contextmenuposition');
+		my $pos = ($cmpos && $cmpos == 1) ? 'aaa' : 'zzz';
 		my @contextmenus = ('contextstatsalbumtracks', 'contextstatsartisttracks', 'contextstatsartistalbums', 'contextstatsgenretracks', 'contextstatsgenrealbums', 'contextstatsgenreartists', 'contextstatsyeartracks', 'contextstatsyearalbums', 'contextstatsyearartists', 'contextstatsplaylisttracks', 'contextstatsplaylistalbums', 'contextstatsplaylistartists');
 		foreach (@contextmenus) {
 			Slim::Menu::SystemInfo->deregisterInfoProvider($pos.$_);
@@ -583,9 +569,6 @@ sub initPrefs {
 			artistsvalidcontext => {'genre' => 1, 'year' => 1, 'playlist' => 1},
 			sortorder => 89
 		},
-
-
-
 		'TopRatedTotal' => {
 			id => 'TopRatedTotal',
 			name => string('PLUGIN_CONTEXTSTATS_TOPRATED_TOTAL'),
@@ -924,13 +907,9 @@ sub objectInfoHandler {
 		return;
 	}
 
-	my $objectID = ($context eq 'year' || $context eq 'decade') ? $obj : $obj->id;
-	my $objectName;
-	if ($context eq 'year' || $context eq 'decade') {
-		$objectName = "".$obj;
-	} else {
-		$objectName = $obj->name;
-	}
+	my $is_year_or_decade = ($context eq 'year' || $context eq 'decade');
+	my $objectID = $is_year_or_decade ? $obj : $obj->id;
+	my $objectName = $is_year_or_decade ? "" . $obj : $obj->name;
 
 	my $menuItemTitle;
 	$menuItemTitle = string('PLUGIN_CONTEXTSTATS_LISTITEMS_ARTISTS') if $listType eq 'artists';
@@ -978,12 +957,11 @@ sub _statsListsMenuWeb {
 	my $actionTrackIDs = $params->{'actiontrackids'};
 	my $listType = $params->{'listtype'};
 
-	if ($action && ($action eq 'load' || $action eq 'insert' || $action eq 'add') && $actionTrackIDs) {
-		$log->info('action part');
+	if ($client && $action && ($action eq 'load' || $action eq 'insert' || $action eq 'add') && $actionTrackIDs) {
 		$client->execute(['contextstats', 'plcontrolcmd', $action, $listType, 'ids:'.$actionTrackIDs]);
 	}
 
-	$params->{'noContributorPictures'} = 1 if $listType eq 'artists' && (!$can_lms_artist_artwork || ($can_lms_artist_artwork && $serverPrefs->get('noContributorPictures')));
+	$params->{'noContributorPictures'} = 1 if $listType eq 'artists' && (!$can_lms_artist_artwork || $serverPrefs->get('noContributorPictures'));
 	$params->{'decade'} = (floor($params->{'objectid'}/10) * 10 + 0).'s' if ($params->{'context'} eq 'year');
 	$params->{'apcenabled'} = $apc_enabled;
 	$params->{'displayxtraline'} = $prefs->get('displayxtraline');
@@ -1141,7 +1119,7 @@ sub _jiveGetItems {
 		return;
 	}
 
-	my $materialCaller = 1 if (defined($request->{'_connectionid'}) && $request->{'_connectionid'} =~ 'Slim::Web::HTTP::ClientConn' && defined($request->{'_source'}) && $request->{'_source'} eq 'JSONRPC');
+	my $materialCaller = (defined($request->{'_connectionid'}) && $request->{'_connectionid'} =~ 'Slim::Web::HTTP::ClientConn' && defined($request->{'_source'}) && $request->{'_source'} eq 'JSONRPC') ? 1 : 0;
 	my $selectedListID = _getRequestParamVal($request, 'selectedlistid');
 	my $context = _getRequestParamVal($request, 'context');
 	my $listType = _getRequestParamVal($request, 'listtype');
@@ -1201,7 +1179,7 @@ sub _jiveGetItems {
 					}
 
 					$returntext = $thisItem->{'artistname'};
-					$returntext .= "\n".string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT').': '.$thisItem->{'avgrating'}.' '.$sepChar.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT').': '.$thisItem->{'totalrating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT').': '.$thisItem->{'avgplaycount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT').': '.$thisItem->{'totalplaycount'};
+					$returntext .= "\n".string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT').': '.$thisItem->{'avgrating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT').': '.$thisItem->{'totalrating'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT').': '.$thisItem->{'avgplaycount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT').': '.$thisItem->{'totalplaycount'};
 					$returntext .= ' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT').': '.$thisItem->{'avgskipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT').': '.$thisItem->{'totalskipcount'}.' '.$sepChar.' '.string('PLUGIN_CONTEXTSTATS_LISTITEMS_DPSV').': '.$thisItem->{'dpsv'} if $apc_enabled;
 
 					$actions = {
@@ -1259,10 +1237,10 @@ sub _jiveGetItems {
 
 				$request->addResultLoop('item_loop', 0, 'type', 'redirect');
 				$request->addResultLoop('item_loop', 0, 'actions', $actions);
-				unless ($listType eq 'artists' && $materialCaller &&
-				(!$can_lms_artist_artwork || ($can_lms_artist_artwork && $serverPrefs->get('noContributorPictures')))) {
+				unless ($listType eq 'artists' && $materialCaller && (!$can_lms_artist_artwork || $serverPrefs->get('noContributorPictures'))) {
 					$request->addResultLoop('item_loop', 0, 'icon', 'plugins/ContextStats/html/images/allsongs_svg.png');
 				}
+
 				$request->addResultLoop('item_loop', 0, 'text', $returnText.' ('.$itemCount.')');
 				$cnt++;
 			}
@@ -1451,7 +1429,7 @@ sub _jiveBrowseAll {
 		$request->addResultLoop('item_loop', $cnt, 'type', 'redirect');
 		$request->addResultLoop('item_loop', $cnt, 'actions', $actions);
 		$request->addResultLoop('item_loop', $cnt, 'text', $thisType->{'name'});
-		$cnt++
+		$cnt++;
 	}
 
 	$request->addResult('offset', 0);
@@ -1490,8 +1468,8 @@ sub getListsForContext {
 				next if !$listTypes->{$thisItem}{'artistsvalidcontext'}{$thisContext};
 			}
 		}
-		next if lc($listTypes->{$thisItem}{'id'}) =~ 'recentlyadded' && !$recentlyAddedPeriod;
-		next if lc($listTypes->{$thisItem}{'id'}) =~ 'recentlyplayed' && !$recentlyPlayedPeriod;
+		next if lc($listTypes->{$thisItem}{'id'}) =~ /recentlyadded/ && !$recentlyAddedPeriod;
+		next if lc($listTypes->{$thisItem}{'id'}) =~ /recentlyplayed/ && !$recentlyPlayedPeriod;
 		next if $listTypes->{$thisItem}{'apc'} && !$apc_enabled;
 		next if $listTypes->{$thisItem}{'rl3'} && !$ratingslightv3_enabled;
 
@@ -1507,6 +1485,7 @@ sub getListsForContext {
 
 sub getItemsForStats {
 	my ($client, $jive, $context, $listType, $objectid, $selectedlistid, $useDecade) = @_;
+	$objectid = int($objectid) if defined $objectid;
 
 	#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval', 'prevRating', 'lastRated'
 	my $table = ($apc_enabled && $prefs->get('useapcvalues')) ? 'alternativeplaycount' : 'tracks_persistent';
@@ -1562,7 +1541,7 @@ sub getItemsForStats {
 		if ($can_lms_artist_artwork) {
 			$sql .= ", contributors.portraitid";
 		} else {
-			$sql .= ", contributors.name"; # dummy duplicate to make binding values easier
+			$sql .= ", contributors.name"; # dummy column to keep bind_col offsets consistent regardless of $can_lms_artist_artwork
 		}
 		$sql .= ", avg(t.rating)/20 as avgrating";
 		$sql .= ", sum(t.rating)/20 as totalrating";
@@ -1867,7 +1846,7 @@ sub getItemsForStats {
 
 	eval {
 		my $sth = $dbh->prepare($sql);
-		$sth->execute() or do {$sql = undef;};
+		$sth->execute() or die $dbh->errstr;
 
 		my ($trackID, $trackTitle, $trackYear, $albumID, $albumTitle, $albumYear, $albumArtwork, $artistID, $artistName, $artistPortraitID);
 		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV, $trackPrevRating, $trackLastRated);
@@ -1993,7 +1972,7 @@ sub getItemsForStats {
 		}
 		$sth->finish();
 	};
-	if ($@) {main::DEBUGLOG && $log->is_debug && $log->debug("error: $@");}
+	if ($@) {$log->error("error: $@");}
 
 	main::INFOLOG && $log->is_info && $log->info('Fetched '.scalar (@matchingItems).(scalar (@matchingItems) == 1 ? ' item' : ' items')." for $selectedlistid and ID: $objectid");
 	return \@matchingItems;
@@ -2054,13 +2033,10 @@ sub _multipleIdsPLcontrol {
 
 sub _getRequestParamVal {
 	my ($request, $paramName, $optional) = @_;
-
 	my $paramVal = $request->getParam('_'.$paramName);
 	if (defined($paramVal) && $paramVal =~ /^$paramName:(.*)$/) {
-		$paramVal = $1;
-		return $paramVal;
-	} elsif (defined($request->getParam('_'.$paramName))) {
-		$paramVal = $request->getParam('_'.$paramName);
+		return $1;
+	} elsif (defined($paramVal)) {
 		return $paramVal;
 	} else {
 		$log->error("Missing parameter: $paramName. Provided $paramName = ".Data::Dump::dump($paramVal)) unless $optional;

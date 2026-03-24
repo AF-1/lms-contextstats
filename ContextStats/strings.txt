@@ -34,9 +34,6 @@ PLUGIN_CONTEXTSTATS_DECADE
 PLUGIN_CONTEXTSTATS_NOSEL
 	EN	None selected
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_ALL
-	EN	All
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_NOITEMSFOUND
 	EN	No matching items
 
@@ -247,14 +244,8 @@ PLUGIN_CONTEXTSTATS_LISTITEMS_USEYEAR
 PLUGIN_CONTEXTSTATS_LISTITEMS_USEDECADE
 	EN	Use decade
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT
-	EN	Avg. Play Count
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGPLAYCOUNT_SHORT
 	EN	AvPC
-
-PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT
-	EN	Avg. Skip Count
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT
 	EN	AvSC
@@ -262,47 +253,23 @@ PLUGIN_CONTEXTSTATS_LISTITEMS_AVGSKIPCOUNT_SHORT
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGDPSV
 	EN	DPSV
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_RATING
-	EN	Rating
-
-PLUGIN_CONTEXTSTATS_LISTITEMS_RATING_SHORT
-	EN	R
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_PREVRATING_SHORT
 	EN	Prev.R
-
-PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING
-	EN	Avg. Rating
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_AVGRATING_SHORT
 	EN	AvR
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING
-	EN	Total Rating
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALRATING_SHORT
 	EN	TR
-
-PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT
-	EN	Play Count
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_PLAYCOUNT_SHORT
 	EN	PC
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT
-	EN	Total Play Count
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALPLAYCOUNT_SHORT
 	EN	TPC
 
-PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT
-	EN	Skip Count
-
 PLUGIN_CONTEXTSTATS_LISTITEMS_SKIPCOUNT_SHORT
 	EN	SC
-
-PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT
-	EN	Total Skip Count
 
 PLUGIN_CONTEXTSTATS_LISTITEMS_TOTALSKIPCOUNT_SHORT
 	EN	TSC
@@ -416,9 +383,6 @@ PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_TOP
 PLUGIN_CONTEXTSTATS_SETTINGS_CONTEXTMENUPOSITION_BOTTOM
 	EN	Bottom
 
-PLUGIN_CONTEXTSTATS_SETTINGS_DISABLED
-	EN	Disabled
-
 PLUGIN_CONTEXTSTATS_SETTINGS_SHOWYEAR
 	EN	Show year with albums and tracks
 
@@ -429,7 +393,7 @@ PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER
 	EN	Rating character
 
 PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_DESC
-	EN	Choose the displayed rating character for menus and titelformats.<br><br><b>*** IMPORTANT, please read ***</b><br><br>SB <b>Touch</b>, SB <b>Radio</b>, <b>piCorePlayer</b>, <b>Squeezeplay</b> and other players running jivelite <b>do not support displaying the unicode blackstar character out of the box</b>.<br>This character is not part of their <i>default</i> font. If you want to display this character on these devices you'll have to <b>replace the default font</b> on these devices with a font that contains this character or simply install the <a href="https://github.com/AF-1" target="_blank" rel="noopener noreferrer"><i>Dark Flat Skin</i></a> applet.
+	EN	Choose the displayed rating character for menus and titleformats.<br><br><b>*** IMPORTANT, please read ***</b><br><br>SB <b>Touch</b>, SB <b>Radio</b>, <b>piCorePlayer</b>, <b>Squeezeplay</b> and other players running jivelite <b>do not support displaying the unicode blackstar character out of the box</b>.<br>This character is not part of their <i>default</i> font. If you want to display this character on these devices you'll have to <b>replace the default font</b> on these devices with a font that contains this character or simply install the <a href="https://github.com/AF-1" target="_blank" rel="noopener noreferrer"><i>Dark Flat Skin</i></a> applet.
 
 PLUGIN_CONTEXTSTATS_SETTINGS_RATINGDISPLAYCHARACTER_STAR_TEXT
 	EN	* - common text star
