@@ -30,9 +30,4 @@ sub prefs {
 	return ($prefs, qw(listlimit useapcvalues browsemenuitem displayxtraline jiveextralinelength min_album_tracks topratedminrating displayratingchar showyear recentlyplayedperiod recentlyaddedperiod ratingchangedperiod contextmenuposition));
 }
 
-sub handler {
-	my ($class, $client, $paramRef) = @_;
-	return $class->SUPER::handler($client, $paramRef);
-}
-
 1;
