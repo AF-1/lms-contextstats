@@ -1905,7 +1905,7 @@ sub getItemsForStats {
 						($n, $i) = $sth_artist->fetchrow_array();
 						$sth_artist->finish();
 					};
-					if ($@) { $log->error("SQL error: $@ DBI: $DBI::errstr"); }
+					if ($@) { $log->error("SQL error: $@"); }
 					if ($n && $n ne '') { $artistName = $n; $artistID = $i; last; }
 				}
 			}
