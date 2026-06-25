@@ -90,7 +90,8 @@ sub initPrefs {
 		displayxtraline => 1,
 		jiveextralinelength => 82,
 		topratedminrating => 60,
-		ratingchangedperiod => 0
+		ratingchangedperiod => 0,
+		browsemenuitem => 1,
 	});
 
 	$prefs->setValidate({'validator' => 'intlimit', 'low' => 1, 'high' => 100}, 'min_album_tracks');
