@@ -966,8 +966,6 @@ sub _statsListsMenuWeb {
 	$params->{'decade'} = (floor($params->{'objectid'}/10) * 10 + 0).'s' if ($params->{'context'} eq 'year');
 	$params->{'apcenabled'} = $apc_enabled;
 	$params->{'displayxtraline'} = $prefs->get('displayxtraline');
-	my $host = $params->{host} || (Slim::Utils::Network::serverAddr() . ':' . preferences('server')->get('httpport'));
-	$params->{'thishost'} = 'http://' . $host;
 
 	if ($params->{'selectedlistid'} && $params->{'context'} && $params->{'listtype'} && ($params->{'objectid'} || $params->{'context'} eq 'all')) {
 		my $matchingItems = getItemsForStats($client, 0, $params->{'context'}, $params->{'listtype'}, $params->{'objectid'}, $params->{'selectedlistid'}, $params->{'usedecade'});

@@ -131,7 +131,7 @@
 	[%- IF context == 'all'%]
 	<a href="[% webroot %]plugins/ContextStats/html/browse_all.html?player=[% playerURI %]">[% 'PLUGIN_CONTEXTSTATS' | string %]</a>
 	[% ELSE %]
-	<a href="[% thishost %]/clixmlbrowser/clicmd=[% context %]info+items&[% IF context == 'year' %]year[% ELSE %][% context %]_id[% END %]=[% objectid %]&linktitle=Information%20([% objectname | uri %])/?player=[% playerURI %]">
+	<a href="[% webroot %]clixmlbrowser/clicmd=[% context %]info+items&[% IF context == 'year' %]year[% ELSE %][% context %]_id[% END %]=[% objectid %]&linktitle=Information%20([% objectname | uri %])/?player=[% playerURI %]">
 		Information ([% objectname | html %])
 	[% END -%]
 	</a> [% IF systemSkin == 'Classic' %]/[% ELSE %]>[% END %] [% IF listtype == 'artists' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ARTISTS' | string %][% ELSIF listtype == 'albums' %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_ALBUMS' | string %][% ELSE %][% 'PLUGIN_CONTEXTSTATS_LISTITEMS_TRACKS' | string %][% END %] [% 'PLUGIN_CONTEXTSTATS_HEADER' | string %]
