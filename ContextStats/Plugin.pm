@@ -47,7 +47,7 @@ sub initPlugin {
 		if ($prefs->get('browsemenuitem')) {
 			Slim::Web::Pages->addPageFunction('browse_all\.html', \&_statsListsMenuWebAll);
 			Slim::Web::Pages->addPageLinks('browse', {'PLUGIN_CONTEXTSTATS' => 'plugins/ContextStats/html/browse_all.html'});
-			Slim::Web::Pages->addPageLinks('icons', {'PLUGIN_CONTEXTSTATS' => 'plugins/ContextStats/html/images/contextstats_icon_svg.png'});
+			Slim::Web::Pages->addPageLinks('icons', {'PLUGIN_CONTEXTSTATS' => $class->_pluginDataFor('icon')});
 		}
 	}
 
