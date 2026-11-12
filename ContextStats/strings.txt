@@ -420,7 +420,7 @@ PLUGIN_CONTEXTSTATS_SETTINGS_RATINGCHANGEDPERIOD_DESC
 	EN	By default, <i>Rating Changed</i>, <i>Rating Raised</i> and <i>Rating Lowered</i> will list all matching tracks in descending order of the date last rated, only limited by the list limit.<br>With this setting you can limit the result to a specific period.
 
 PLUGIN_CONTEXTSTATS_RATINGCHANGED
-	EN	Rating Changed
+	EN	Rating Changed (Last Rated)
 
 PLUGIN_CONTEXTSTATS_RATINGRAISED
 	EN	Rating Raised

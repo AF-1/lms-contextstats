@@ -1484,7 +1484,7 @@ sub getListsForContext {
 
 sub getItemsForStats {
 	my ($client, $jive, $context, $listType, $objectid, $selectedlistid, $useDecade) = @_;
-	$objectid = int($objectid) if defined $objectid;
+	$objectid = (defined $objectid && $objectid =~ /^(\d+)/) ? int($1) : 0;
 
 	#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval', 'prevRating', 'lastRated'
 	my $table = ($apc_enabled && $prefs->get('useapcvalues')) ? 'alternativeplaycount' : 'tracks_persistent';
@@ -1497,11 +1497,9 @@ sub getItemsForStats {
 	my $VAstring = $serverPrefs->get('variousArtistsString') || 'Various Artists';
 
 	#### build sql query ####
-	# For albums and tracks, the query is built in a single pass.
-	# For artists, a subquery is used to deduplicate tracks per artist before
-	# aggregation. Without it, tracks with multiple contributor roles (e.g. role 1
-	# AND role 5 for the same artist) would be counted multiple times in
-	# avg(), sum() and min() aggregations.
+	# For albums & tracks: build the query in a single pass.
+	# For artists: use a subquery to deduplicate tracks per artist before aggregation.
+	# Without it, tracks with multiple contributor roles (e.g. role 1 AND role 5 for the same artist) would be counted multiple times in avg(), sum() and min() aggregations.
 
 	my $sql = "SELECT";
 	if ($listType eq 'albums') {
@@ -1525,9 +1523,10 @@ sub getItemsForStats {
 		$sql .= " FROM tracks";
 
 		$sql .= " join library_track on library_track.track = tracks.id and library_track.library = \"$activeClientLibrary\"" if (defined($activeClientLibrary) && $activeClientLibrary ne '');
-		$sql .= " join contributor_album on tracks.album = contributor_album.album and contributor_album.role = 5 join contributors on contributor_album.contributor = contributors.id";
-		$sql .= " and contributor_album.contributor = $objectid" if $context eq 'artist';
 		$sql .= " join albums on tracks.album = albums.id";
+		$sql .= " join contributor_album on tracks.album = contributor_album.album and (contributor_album.role = 5 or (contributor_album.role = 1 and contributor_album.contributor = albums.contributor and not exists (select 1 from contributor_album c5 where c5.album = contributor_album.album and c5.role = 5))) join contributors on contributor_album.contributor = contributors.id";
+		$sql .= " and contributor_album.contributor = $objectid" if $context eq 'artist';
+
 		$sql .= " left join tracks_persistent on tracks.urlmd5 = tracks_persistent.urlmd5";
 		$sql .= " left join alternativeplaycount on tracks.urlmd5 = alternativeplaycount.urlmd5" if $apc_enabled;
 		$sql .= " join genre_track on tracks.id = genre_track.track and genre_track.genre = $objectid" if $context eq 'genre';
@@ -1752,15 +1751,9 @@ sub getItemsForStats {
 			}
 		}
 		if ($ratingslightv3_enabled && $selectedlistid eq 'RatingChanged') {
-			if ($ratingChangedPeriod) {
-				if ($listType eq 'artists') {
-					$sql .= " and (maxlastrated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod)";
-				} else {
-					$sql .= " and (tracks_persistent.lastRated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod)";
-				}
-			} else {
-				$sql .= " and " . ($listType eq 'artists' ? "maxlastrated" : "tracks_persistent.lastRated") . " is not null";
-			}
+			# maxlastrated is 0 for albums/artists without rated tracks
+			$sql .= " and maxlastrated > 0";
+			$sql .= " and maxlastrated >= (select max(ifnull(tracks_persistent.lastRated,0)) from tracks_persistent) - $ratingChangedPeriod" if $ratingChangedPeriod;
 		}
 	}
 
