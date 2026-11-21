@@ -5,7 +5,7 @@ Context Stats
 <img src="screenshots/cs_icon.png" align="right" width="90px">**Context Stats** lets you display lists of tracks, albums or artists *sorted by statistics* from the context menus of a selected artist, album, genre, year and playlist.<br>💡 Enabling *Display home menu item* in the plugin settings adds a menu item in the LMS home menu with lists of tracks, albums or artists for your *<ins>entire</ins>* music library.<br clear="right"><br>For summary library statistics (e.g. genres with the most, percentage of albums (fully/partly) played or best rated tracks), have a look at the [**Visual Statistics**](https://github.com/AF-1/#-visual-statistics) plugin.
 <br>
 
-[> [!TIP]]
+> [!TIP]
 > **External API:** See the [External API wiki page](https://github.com/AF-1/<repo>/wiki/External-API) for details.
 
 <br><br><br>
