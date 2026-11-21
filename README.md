@@ -6,9 +6,9 @@ Context Stats
 <br>
 
 > [!TIP]
-> **External API:** See the [External API wiki page](https://github.com/AF-1/<repo>/wiki/External-API) for details.
+> **External API:** This plugin provides an external API for developers. See the [External API wiki page](https://github.com/AF-1/<repo>/wiki/External-API) for details.
 
-<br><br><br>
+<br><br>
 
 <a href="https://github.com/AF-1/">⬅️ <b>Back to the list of all plugins</b></a>
 <br><br><br>
