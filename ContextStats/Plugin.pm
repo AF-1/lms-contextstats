@@ -60,6 +60,8 @@ sub initPlugin {
 	Slim::Control::Request::addDispatch(['contextstats', 'jiveitemsmenu', '_selectedlistid', '_context', '_listtype', '_objectid', '_objectname', '_usedecade'], [1, 0, 1, \&_jiveGetItems]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jiveactionsmenu', '_ids', '_listtype', '_multiple'], [0, 1, 1, \&_jiveActionsMenu]);
 	Slim::Control::Request::addDispatch(['contextstats', 'jivebrowseall'], [1, 0, 1, \&_jiveBrowseAll]);
+	Slim::Control::Request::addDispatch(['contextstats', 'lists'], [0, 1, 1, \&_apiLists]);
+	Slim::Control::Request::addDispatch(['contextstats', 'items', '_index', '_quantity'], [0, 1, 1, \&_apiItems]);
 }
 
 sub postinitPlugin {
@@ -1436,6 +1438,150 @@ sub _jiveBrowseAll {
 	$request->setStatusDone();
 }
 
+sub _apiError {
+	my ($request, $msg) = @_;
+	$request->addResult('error', $msg);
+	$request->addResult('count', 0);
+	$request->setStatusDone();
+}
+
+sub _apiLists {
+	my $request = shift;
+	main::DEBUGLOG && $log->is_debug && $log->debug('request params = '.Data::Dump::dump($request->getParamsCopy()));
+
+	if (!$request->isQuery([['contextstats'],['lists']])) {
+		$log->warn('incorrect command');
+		$request->setStatusBadDispatch();
+		return;
+	}
+
+	my $listType = $request->getParam('listtype');
+	my $context = $request->getParam('context') || 'all';
+	if (!_apiIsValidListTypeAndContext($listType, $context)) {
+		return _apiError($request, 'invalid listtype or context');
+	}
+
+	my $validLists = getListsForContext($listType, $context);
+	my $cnt = 0;
+	foreach my $listID (sort { $validLists->{$a}{'sortorder'} <=> $validLists->{$b}{'sortorder'} } keys %{$validLists}) {
+		$request->addResultLoop('lists_loop', $cnt, 'id', $listID);
+		$request->addResultLoop('lists_loop', $cnt, 'name', $validLists->{$listID}{'name'});
+		$cnt++;
+	}
+	$request->addResult('count', $cnt);
+	$request->setStatusDone();
+}
+
+sub _apiItems {
+	my $request = shift;
+	main::DEBUGLOG && $log->is_debug && $log->debug('request params = '.Data::Dump::dump($request->getParamsCopy()));
+
+	if (!$request->isQuery([['contextstats'],['items']])) {
+		$log->warn('incorrect command');
+		$request->setStatusBadDispatch();
+		return;
+	}
+
+	my $start = $request->getParam('_index');
+	my $limit = $request->getParam('_quantity');
+	$start = (defined $start && $start =~ /^\d+$/) ? int($start) : 0;
+	$limit = (defined $limit && $limit =~ /^\d+$/ && $limit > 0) ? int($limit) : 50;
+	$limit = 500 if $limit > 500;
+
+	my $listType = $request->getParam('listtype');
+	my $context = $request->getParam('context') || 'all';
+	my $listID = $request->getParam('list');
+	my $objectID = $request->getParam('objectid');
+
+	my $validLists = _apiIsValidListTypeAndContext($listType, $context) ? getListsForContext($listType, $context) : {};
+	if (!defined $listID || !$validLists->{$listID}) {
+		return _apiError($request, 'invalid listtype, context or list');
+	}
+	if ($context ne 'all' && (!defined $objectID || $objectID !~ /^[1-9]\d*$/)) {
+		return _apiError($request, 'missing or invalid objectid');
+	}
+
+	# a given player id applies the virtual library of that player
+	my $apiOpts = {start => $start, limit => $limit};
+	my $items = getItemsForStats($request->client(), 0, $context, $listType, $objectID, $listID, $request->getParam('usedecade'), $apiOpts);
+
+	my $cnt = 0;
+	foreach my $item (@{$items}) {
+		foreach my $key (keys %{$item}) {
+			$request->addResultLoop('items_loop', $cnt, $key, $item->{$key}) if defined $item->{$key};
+		}
+		$cnt++;
+	}
+	$request->addResult('count', $apiOpts->{'count'} || 0);
+	$request->setStatusDone();
+}
+
+sub _apiIsValidListTypeAndContext {
+	my ($listType, $context) = @_;
+	return (defined $listType && $listType =~ /^(?:tracks|albums|artists)$/ && defined $context && $context =~ /^(?:all|artist|album|genre|year|playlist)$/) ? 1 : 0;
+}
+
+sub _apiBuildItem {
+	my ($listType, $selectedListID, $v) = @_;
+	my $item;
+
+	if ($listType eq 'tracks') {
+		$item = {
+			id => $v->{'trackID'},
+			title => Slim::Utils::Unicode::utf8decode($v->{'trackTitle'} // '', 'utf8'),
+			album_id => $v->{'albumID'},
+			album_title => Slim::Utils::Unicode::utf8decode($v->{'albumTitle'} // '', 'utf8'),
+			artwork_id => $v->{'albumArtwork'},
+			artist_id => $v->{'artistID'},
+			artist_name => Slim::Utils::Unicode::utf8decode($v->{'artistName'} // '', 'utf8'),
+			rating => $v->{'trackRating'},
+			play_count => $v->{'trackPC'},
+		};
+		$item->{'year'} = $v->{'trackYear'} if $v->{'trackYear'};
+		if ($apc_enabled) {
+			$item->{'skip_count'} = $v->{'trackSC'};
+			$item->{'dpsv'} = $v->{'trackDPSV'};
+		}
+		if ($ratingslightv3_enabled && ($selectedListID eq 'RatingChanged' || $selectedListID eq 'RatingRaised' || $selectedListID eq 'RatingLowered')) {
+			$item->{'prev_rating'} = $v->{'trackPrevRating'};
+			$item->{'last_rated'} = $v->{'trackLastRated'};
+		}
+		return _apiAddTimes($item, $v);
+	}
+
+	$item = {
+		avg_rating => round(($v->{'avgRating'} // 0) * 20), # albums and artists: avg/total ratings on a 0-100 scale like tracks
+		total_rating => round(($v->{'totalRating'} // 0) * 20, 0),
+		avg_play_count => round($v->{'avgPC'}),
+		total_play_count => round($v->{'totalPC'}, 0),
+	};
+	if ($apc_enabled) {
+		$item->{'avg_skip_count'} = round($v->{'avgSC'});
+		$item->{'total_skip_count'} = round($v->{'totalSC'}, 0);
+		$item->{'avg_dpsv'} = round($v->{'avgDPSV'});
+	}
+	if ($listType eq 'albums') {
+		$item->{'id'} = $v->{'albumID'};
+		$item->{'title'} = Slim::Utils::Unicode::utf8decode($v->{'albumTitle'} // '', 'utf8');
+		$item->{'year'} = $v->{'albumYear'} if $v->{'albumYear'};
+		$item->{'artwork_id'} = $v->{'albumArtwork'};
+		$item->{'artist_id'} = $v->{'artistID'};
+		$item->{'artist_name'} = Slim::Utils::Unicode::utf8decode($v->{'artistName'} // '', 'utf8');
+	} else {
+		$item->{'id'} = $v->{'artistID'};
+		$item->{'name'} = Slim::Utils::Unicode::utf8decode($v->{'artistName'} // '', 'utf8');
+		$item->{'portrait_id'} = $v->{'artistPortraitID'} if $can_lms_artist_artwork && !$serverPrefs->get('noContributorPictures');
+	}
+	return _apiAddTimes($item, $v);
+}
+
+sub _apiAddTimes {
+	my ($item, $v) = @_;
+	$item->{'last_played'} = $v->{'lastPlayed'} if $v->{'lastPlayed'};
+	$item->{'added'} = $v->{'added'} if $v->{'added'};
+	$item->{'last_skipped'} = $v->{'lastSkipped'} if $v->{'lastSkipped'};
+	return $item;
+}
 
 sub getListsForContext {
 	my ($thisListType, $thisContext) = @_;
@@ -1483,12 +1629,13 @@ sub getListsForContext {
 }
 
 sub getItemsForStats {
-	my ($client, $jive, $context, $listType, $objectid, $selectedlistid, $useDecade) = @_;
+	my ($client, $jive, $context, $listType, $objectid, $selectedlistid, $useDecade, $apiOpts) = @_;
+	return [] unless defined $selectedlistid && exists $listTypes->{$selectedlistid};
 	$objectid = (defined $objectid && $objectid =~ /^(\d+)/) ? int($1) : 0;
 
 	#reqstats keys: 'added', 'playCount', 'lastPlayed', 'rating', 'skipCount', 'lastSkipped', 'dynPSval', 'prevRating', 'lastRated'
 	my $table = ($apc_enabled && $prefs->get('useapcvalues')) ? 'alternativeplaycount' : 'tracks_persistent';
-	my $activeClientLibrary = Slim::Music::VirtualLibraries->getLibraryIdForClient($client);
+	my $activeClientLibrary = $client ? Slim::Music::VirtualLibraries->getLibraryIdForClient($client) : undef;
 	my $topratedMinRating = $prefs->get('topratedminrating');
 	my $recentlyPlayedPeriod = $prefs->get('recentlyplayedperiod');
 	my $recentlyAddedPeriod = $prefs->get('recentlyaddedperiod');
@@ -1553,7 +1700,7 @@ sub getItemsForStats {
 		# bound columns end here
 
 		# below unbound columns (used internally for filtering/ordering only)
-		$sql .= ", max(t.lastSkipped) as maxlastskipped";
+		$sql .= ", max(t.lastSkipped) as maxlastskipped" if $apc_enabled;
 		$sql .= ", max(t.lastPlayed) as maxlastplayed";
 		$sql .= ", max(t.added) as maxadded";
 		$sql .= ", max(t.lastRated) as maxlastrated" if $ratingslightv3_enabled;
@@ -1757,6 +1904,8 @@ sub getItemsForStats {
 		}
 	}
 
+	my $countSql = $apiOpts ? "SELECT count(*) FROM ($sql)" : undef;
+
 	# order
 	my @orderby = ();
 
@@ -1820,14 +1969,21 @@ sub getItemsForStats {
 	if ($listTypes->{$selectedlistid}{'reqstats'}{'lastRated'}) {
 		push @orderby, 'maxlastrated desc';
 	}
-	push @orderby, 'random()';
+
+	# api mode: stable order for paging
+	my %stableOrder = (tracks => 'tracks.id', albums => 'tracks.album, contributor_album.contributor', artists => 't.contributor');
+	push @orderby, $apiOpts ? $stableOrder{$listType} : 'random()';
 
 	$sql .= ' ORDER by ' . join(', ', @orderby);
 
 
 	# limit
-	my $listLimit = $prefs->get('listlimit') || 50;
-	$sql .= " LIMIT $listLimit" unless $context eq 'album';
+	if ($apiOpts) {
+		$sql .= ' LIMIT '.int($apiOpts->{'limit'}).' OFFSET '.int($apiOpts->{'start'});
+	} else {
+		my $listLimit = $prefs->get('listlimit') || 50;
+		$sql .= " LIMIT $listLimit" unless $context eq 'album';
+	}
 
 	main::DEBUGLOG && $log->is_debug && $log->debug("\nselectedlistid = ".$selectedlistid."\nSQL = ".$sql."\n");
 
@@ -1837,11 +1993,12 @@ sub getItemsForStats {
 	my $sth_artist = $dbh->prepare_cached('SELECT contributors.name, contributors.id FROM contributor_track JOIN contributors ON contributor_track.contributor = contributors.id WHERE contributor_track.track = ? AND contributor_track.role = ? LIMIT 1');
 
 	eval {
+		($apiOpts->{'count'}) = $dbh->selectrow_array($countSql) if $countSql;
 		my $sth = $dbh->prepare($sql);
 		$sth->execute() or die $dbh->errstr;
 
 		my ($trackID, $trackTitle, $trackYear, $albumID, $albumTitle, $albumYear, $albumArtwork, $artistID, $artistName, $artistPortraitID);
-		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV, $trackPrevRating, $trackLastRated);
+		my ($avgRating, $totalRating, $avgPC, $totalPC, $avgSC, $totalSC, $avgDPSV, $trackRating, $trackPC, $trackSC, $trackDPSV, $trackPrevRating, $trackLastRated, $lastPlayed, $added, $lastSkipped);
 
 		if ($listType eq 'albums') {
 			$sth->bind_col(1,\$albumID);
@@ -1888,6 +2045,13 @@ sub getItemsForStats {
 			}
 		}
 
+		if ($apiOpts) {
+			my $colIdx = $sth->{'NAME_lc_hash'};
+			$sth->bind_col($colIdx->{'maxlastplayed'} + 1, \$lastPlayed) if defined $colIdx->{'maxlastplayed'};
+			$sth->bind_col($colIdx->{'maxadded'} + 1, \$added) if defined $colIdx->{'maxadded'};
+			$sth->bind_col($colIdx->{'maxlastskipped'} + 1, \$lastSkipped) if $apc_enabled && defined $colIdx->{'maxlastskipped'};
+		}
+
 		while ($sth->fetch()) {
 			if ($listType eq 'tracks' && ($artistID == $VAid || $artistName eq $VAstring)) {
 				for my $role (1, 6, 5) {
@@ -1900,6 +2064,11 @@ sub getItemsForStats {
 					if ($@) { $log->error("SQL error: $@"); }
 					if ($n && $n ne '') { $artistName = $n; $artistID = $i; last; }
 				}
+			}
+
+			if ($apiOpts) {
+				push (@matchingItems, _apiBuildItem($listType, $selectedlistid, {trackID => $trackID, trackTitle => $trackTitle, trackYear => $trackYear, albumID => $albumID, albumTitle => $albumTitle, albumYear => $albumYear, albumArtwork => $albumArtwork, artistID => $artistID, artistName => $artistName, artistPortraitID => $artistPortraitID, avgRating => $avgRating, totalRating => $totalRating, avgPC => $avgPC, totalPC => $totalPC, avgSC => $avgSC, totalSC => $totalSC, avgDPSV => $avgDPSV, trackRating => $trackRating, trackPC => $trackPC, trackSC => $trackSC, trackDPSV => $trackDPSV, trackPrevRating => $trackPrevRating, trackLastRated => $trackLastRated, lastPlayed => $lastPlayed, added => $added, lastSkipped => $lastSkipped}));
+				next;
 			}
 
 			if ($listType eq 'albums') {
