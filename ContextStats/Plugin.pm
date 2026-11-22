@@ -906,7 +906,7 @@ sub objectInfoHandler {
 	main::DEBUGLOG && $log->is_debug && $log->debug('context = '.$context.' ## $listType = '.$listType.' ## url = '.Data::Dump::dump($url));
 
 	if (Slim::Music::Import->stillScanning) {
-		$log->warn('Warning: not available until library scan is completed');
+		main::DEBUGLOG && $log->is_debug && $log->debug('Not available until library scan is completed');
 		return;
 	}
 
